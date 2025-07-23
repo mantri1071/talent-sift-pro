@@ -62,7 +62,7 @@ function App() {
 
   const handleSaveAndContinue = () => {
     if (currentStep === 2) {
-      // No mandatory fields in step 2 based on user request
+      
     }
     
     toast({

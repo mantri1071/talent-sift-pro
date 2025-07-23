@@ -55,7 +55,7 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
             Drag & drop a resume here, or click to select. 
             </p>
             <p className="text-sm text-gray-600">
-            PDF OR DOCX only
+            PDF OR DOCX only. MAX 2MB file size.
           </p>
           </div>
 
