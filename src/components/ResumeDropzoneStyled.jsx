@@ -4,12 +4,28 @@ import { FileText, CheckCircle, Trash2 } from 'lucide-react';
 
 const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
   const [file, setFile] = useState(defaultFile || null);
+  const [error, setError] = useState('');
+
+  const MAX_SIZE = 2 * 1024 * 1024; // 2MB in bytes
 
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles, fileRejections) => {
+      setError('');
+
+      if (fileRejections.length > 0) {
+        const rejectedFile = fileRejections[0];
+        if (rejectedFile.errors.some(e => e.code === 'file-too-large')) {
+          setError('File size exceeds 2MB. Please upload a smaller file.');
+        } else if (rejectedFile.errors.some(e => e.code === 'file-invalid-type')) {
+          setError('Invalid file type. Only PDF and DOCX files are allowed.');
+        }
+        return;
+      }
+
       if (acceptedFiles.length > 0) {
         const uploadedFile = acceptedFiles[0];
         setFile(uploadedFile);
+        setError('');
         onFileSelected(uploadedFile);
       }
     },
@@ -18,6 +34,7 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
 
   const removeFile = () => {
     setFile(null);
+    setError('');
     onFileSelected(null);
   };
 
@@ -27,7 +44,7 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
       'application/pdf': ['.pdf'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
     },
-    maxSize: 2 * 1024 * 1024,
+    maxSize: MAX_SIZE,
     multiple: false
   });
 
@@ -38,27 +55,21 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
         Upload Resume <span className="text-red-500">*</span>
       </label>
 
-        <div
-  {...getRootProps()}
-  role="button"
-  tabIndex={0}
-  aria-label="Resume upload area"
-  className={`rounded-lg border-2 border-dashed p-4 text-center transition bg-white/70 min-h-[100px] flex items-center justify-center  ${
-    isDragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
-  }`}
->
-
+      <div
+        {...getRootProps()}
+        role="button"
+        tabIndex={0}
+        aria-label="Resume upload area"
+        className={`rounded-lg border-2 border-dashed p-4 text-center transition bg-white/70 min-h-[100px] flex items-center justify-center ${
+          isDragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
+        }`}
+      >
         <input {...getInputProps()} />
         {!file ? (
-          <div className='space-y-1'>
-          <p className="text-sm text-gray-600">
-            Drag & drop a resume here, or click to select. 
-            </p>
-            <p className="text-sm text-gray-600">
-            PDF OR DOCX only. MAX 2MB file size.
-          </p>
+          <div className="space-y-1">
+            <p className="text-sm text-gray-600">Drag & drop a resume here, or click to select.</p>
+            <p className="text-sm text-gray-600">PDF or DOCX only. MAX 2MB file size.</p>
           </div>
-
         ) : (
           <div className="flex flex-col items-center gap-1">
             <p className="text-green-600 text-sm font-medium flex items-center gap-2">
@@ -76,6 +87,8 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
           </div>
         )}
       </div>
+
+      {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   );
 };
