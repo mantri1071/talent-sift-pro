@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
 import JobFormStep1 from '@/components/JobFormStep1';
 import JobFormStep2 from '@/components/JobFormStep2';
-
+import logo from './logo.png';
 function App() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -100,7 +100,7 @@ function App() {
 
       <div className="relative z-10 min-h-screen flex flex-col">
         <div className="p-8">
-          <img src="logo.png" alt="Start IT Now Logo" className="h-10" />
+          <img src={logo} alt="Start IT Now Logo" className="h-10" />
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4">

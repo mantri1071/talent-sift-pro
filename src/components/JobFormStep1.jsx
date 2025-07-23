@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ResumeDropzoneStyled from '@/components/ResumeDropzoneStyled';
+import pic from '../pic.png';
 
 const FloatingIcon = ({ children, className }) => (
   <motion.div
@@ -36,8 +37,9 @@ const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft
            <FloatingIcon className="bottom-16 -right-8 text-green-500">
             <Star size={24} />
           </FloatingIcon>
+
           <motion.img
-            src="pic.png"
+            src={pic}
             alt="Two colleagues collaborating on a project"
             className="w-full h-auto rounded-3xl shadow-2xl cursor-pointer"
             initial={{ scale: 0.9, opacity: 0 }}
