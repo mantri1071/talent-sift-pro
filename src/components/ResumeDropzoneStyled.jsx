@@ -43,17 +43,21 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
   role="button"
   tabIndex={0}
   aria-label="Resume upload area"
-  className={`rounded-lg border-2 border-dashed p-4 text-center transition bg-white/70 ${
+  className={`rounded-lg border-2 border-dashed p-4 text-center transition bg-white/70 min-h-[100px] flex items-center justify-center  ${
     isDragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
   }`}
 >
 
         <input {...getInputProps()} />
         {!file ? (
+          <div className='space-y-1'>
           <p className="text-sm text-gray-600">
-            Drag & drop a resume here, or click to select
+            Drag & drop a resume here, or click to select. 
+            </p>
+            <p className="text-sm text-gray-600">
             PDF OR DOCX only
           </p>
+          </div>
 
         ) : (
           <div className="flex flex-col items-center gap-1">

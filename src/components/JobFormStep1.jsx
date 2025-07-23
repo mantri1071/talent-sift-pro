@@ -8,6 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ResumeDropzoneStyled from '@/components/ResumeDropzoneStyled';
 import pic from '../pic.png';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; 
+
 
 const FloatingIcon = ({ children, className }) => (
   <motion.div
@@ -19,6 +22,26 @@ const FloatingIcon = ({ children, className }) => (
     {children}
   </motion.div>
 );
+
+function JobDescriptionEditor({ value, onChange }) {
+  return (
+    <ReactQuill
+      theme="snow"
+      value={value}
+      onChange={onChange}
+      modules={{
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          [{ header: [1, 2, 3, false] }],
+          ['clean'],
+        ],
+      }}
+      formats={['bold', 'italic', 'underline', 'header']}
+      placeholder="Describe the role, responsibilities, requirements, etc..."
+      className="bg-white/70 border border-gray-300 rounded-md min-h-[200px]"
+    />
+  );
+}
 
 const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft }) => {
   return (
@@ -49,7 +72,7 @@ const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft
           />
         </div>
       </motion.div>
-
+      
       <motion.div
         layout
         className="flex-1 w-full max-w-2xl"
@@ -164,38 +187,18 @@ const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft
             />
 
             <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                <FileText className="w-4 h-4" />
-                Job Description <span className="text-red-500">*</span>
-              </Label>
-              <div className="flex items-center gap-2 mb-2">
-                <Button variant="ghost" size="sm" className="h-8 px-2">
-                  <strong>B</strong>
-                </Button>
-                <Button variant="ghost" size="sm" className="h-8 px-2">
-                  <em>I</em>
-                </Button>
-                <Button variant="ghost" size="sm" className="h-8 px-2">
-                  <u>U</u>
-                </Button>
-                <Select defaultValue="normal">
-                  <SelectTrigger className="w-32 h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="heading">Heading</SelectItem>
-                    <SelectItem value="subheading">Subheading</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Textarea
-                placeholder="Describe the role, responsibilities, requirements, etc..."
-                value={formData.jobDescription}
-                onChange={(e) => handleInputChange('jobDescription', e.target.value)}
-                className="min-h-[120px] bg-white/70 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
+  <Label className="flex items-center gap-2 text-slate-800 font-semibold ">
+    <FileText className="w-4 h-4" />
+    Job Description <span className="text-red-500">*</span>
+  </Label>
+  <div className="flex items-center gap-2 mb-2">
+
+  </div>
+  <JobDescriptionEditor
+    value={formData.jobDescription}
+    onChange={(value) => handleInputChange('jobDescription', value)}
+  />
+</div>
 
             <div className="flex justify-between pt-6">
               <Button
