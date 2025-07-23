@@ -8,11 +8,7 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
 
   const MAX_SIZE = 2 * 1024 * 1024; 
 
-      if (isTooLarge) {
-      alert("File size exceeds 2MB. Please upload a smaller file.");
-      return;
-    }
-
+  
   const onDrop = useCallback(
     (acceptedFiles, fileRejections) => {
       setError('');
