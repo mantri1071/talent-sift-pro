@@ -100,7 +100,7 @@ function App() {
 
       <div className="relative z-10 min-h-screen flex flex-col">
         <div className="p-8">
-          <img src="https://storage.googleapis.com/hostinger-horizons-assets-prod/7a519cd7-630d-4c5b-ae8a-efe99131893f/d257638409fc86fa67857848dd83cce6.png" alt="Start IT Now Logo" className="h-10" />
+          <img src="logo.png" alt="Start IT Now Logo" className="h-10" />
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4">

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ResumeDropzoneStyled from '@/components/ResumeDropzoneStyled';
 
 const FloatingIcon = ({ children, className }) => (
   <motion.div
@@ -36,7 +37,7 @@ const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft
             <Star size={24} />
           </FloatingIcon>
           <motion.img
-            src="https://storage.googleapis.com/hostinger-horizons-assets-prod/7a519cd7-630d-4c5b-ae8a-efe99131893f/533c876f9a318a5271aa8fc2a3e058a1.png"
+            src="pic.png"
             alt="Two colleagues collaborating on a project"
             className="w-full h-auto rounded-3xl shadow-2xl cursor-pointer"
             initial={{ scale: 0.9, opacity: 0 }}
@@ -155,19 +156,10 @@ const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                <Star className="w-4 h-4" />
-                Required Skills
-              </Label>
-              <Input
-                placeholder="e.g. React, TypeScript, Node.js"
-                value={formData.requiredSkills}
-                onChange={(e) => handleInputChange('requiredSkills', e.target.value)}
-                className="bg-white/70 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-              />
-              <p className="text-sm text-gray-600">Separate multiple skills with commas</p>
-            </div>
+            <ResumeDropzoneStyled
+            onFileSelected={(file) => handleInputChange('resumeFile', file)}
+            defaultFile={formData.resumeFile}
+            />
 
             <div className="space-y-2">
               <Label className="flex items-center gap-2 text-slate-800 font-semibold">
