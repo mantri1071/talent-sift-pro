@@ -52,7 +52,9 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
         {!file ? (
           <p className="text-sm text-gray-600">
             Drag & drop a resume here, or click to select
+            PDF OR DOCX only
           </p>
+
         ) : (
           <div className="flex flex-col items-center gap-1">
             <p className="text-green-600 text-sm font-medium flex items-center gap-2">
