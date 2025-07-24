@@ -81,7 +81,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-350 via-blue-500 to-blue-600 relative overflow-hidden">
       <Helmet>
         <title>Talent Sift - Job Posting Platform</title>
         <meta name="description" content="Create and post job opportunities with Talent Sift's intuitive job posting platform" />

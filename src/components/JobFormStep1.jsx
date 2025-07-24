@@ -53,30 +53,44 @@ const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft
         transition={{ duration: 0.6 }}
         className="flex-1 flex items-center justify-center mb-8 lg:mb-0"
       >
-        <div className="relative w-full max-w-md">
-           <FloatingIcon className="top-10 -left-8 text-blue-500">
-            <Briefcase size={24} />
-          </FloatingIcon>
-           <FloatingIcon className="bottom-16 -right-8 text-green-500">
-            <Star size={24} />
-          </FloatingIcon>
+        <div className="relative w-full max-w-6xl mx-auto">
+  <div className="mb-6 text-center max-w-3xl mx-auto px-4">
+    <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-gray-900">
+      <span className='text-white'>Resume Ranking</span><br />
+      <span>for Perfect Matches</span>
+    </h1>
+    <p className="mt-4 text-base md:text-lg text-gray-800">
+      Our AI-powered tool compares resumes to job descriptions, finding you the best candidates and saving hours of screening time.
+    </p>
+  </div>
+<div>
 
-          <motion.img
-            src={pic}
-            alt="Two colleagues collaborating on a project"
-            className="w-full h-auto rounded-3xl shadow-2xl cursor-pointer"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            whileHover={{ scale: 1.05, y: -10, transition: { duration: 0.4 } }}
-            transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-          />
-        </div>
-      </motion.div>
+  <FloatingIcon className="top-10 -left-8 text-blue-500">
+    <Briefcase size={24} />
+  </FloatingIcon>
+  <FloatingIcon className="bottom-16 -right-8 text-green-500">
+    <Star size={24} />
+  </FloatingIcon>
+
+    <motion.img
+      src={pic}
+      alt="Two colleagues collaborating on a project"
+      className="w-full h-auto rounded-3xl shadow-2xl object-cover"
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      whileHover={{ scale: 1.05, y: -10, transition: { duration: 0.4 } }}
+      transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+      />
+     </div>
+    </div>
+    </motion.div>
+      
       
       <motion.div
         layout
         className="flex-1 w-full max-w-2xl"
       >
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -187,18 +201,18 @@ const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft
             />
 
             <div className="space-y-2">
-  <Label className="flex items-center gap-2 text-slate-800 font-semibold ">
-    <FileText className="w-4 h-4" />
-    Job Description <span className="text-red-500">*</span>
-  </Label>
-  <div className="flex items-center gap-2 mb-2">
+            <Label className="flex items-center gap-2 text-slate-800 font-semibold ">
+            <FileText className="w-4 h-4" />
+              Job Description <span className="text-red-500">*</span>
+            </Label>
+            <div className="flex items-center gap-2 mb-2">
 
-  </div>
-  <JobDescriptionEditor
-    value={formData.jobDescription}
-    onChange={(value) => handleInputChange('jobDescription', value)}
-  />
-</div>
+            </div>
+            <JobDescriptionEditor
+           value={formData.jobDescription}
+           onChange={(value) => handleInputChange('jobDescription', value)}
+           />
+          </div>
 
             <div className="flex justify-between pt-6">
               <Button
