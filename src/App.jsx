@@ -56,7 +56,18 @@ function App() {
     };
 
     form.append('data', JSON.stringify(jobPayload));
+    
     form.append('resumes', formData.resumeFile);
+        // Send to backend API
+        const backendResponse = await axios.post('http://65.2.166.232/api/agentic-ai/workflow-exe', form, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          timeout: 30000
+        });
+        const temp = backendResponse.data.data;
+        console.log('temp:',temp);
+
 
     const url = 'https://dev187243.service-now.com/api/1763965/resumerankingapi/upload';
 
