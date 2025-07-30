@@ -56,10 +56,10 @@ function App() {
     };
 
     form.append('data', JSON.stringify(jobPayload));
-    
+
     form.append('resumes', formData.resumeFile);
         // Send to backend API
-        const backendResponse = await axios.post('http://65.2.166.232/api/agentic-ai/workflow-exe', form, {
+        const backendResponse = await axios.post('https://65.2.166.232/api/agentic-ai/workflow-exe', form, {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
