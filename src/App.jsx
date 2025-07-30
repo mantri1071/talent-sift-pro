@@ -5,10 +5,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
 import JobFormStep1 from '@/components/JobFormStep1';
-import JobFormStep2 from '@/components/JobFormStep2';
 import logo from './logo.png';
+import axios from 'axios';
+
 function App() {
-  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     jobTitle: '',
     yearsOfExperience: '',
@@ -16,14 +16,7 @@ function App() {
     location: '',
     requiredSkills: '',
     jobDescription: '',
-    currency: 'INR (₹)',
-    minSalary: '',
-    maxSalary: '',
-    salaryUnit: 'Per Year',
-    hideSalary: false,
-    function: '',
-    employerJobId: '',
-    vacancies: '5'
+    resumeFile: null, // Initialize resumeFile here
   });
 
   const { toast } = useToast();
@@ -35,49 +28,69 @@ function App() {
     }));
   };
 
-  const handleNext = () => {
-    if (currentStep === 1) {
-      if (!formData.jobTitle || !formData.jobType || !formData.jobDescription) {
-        toast({
-          title: "Missing Information",
-          description: "Please fill in all required fields before continuing.",
-          variant: "destructive"
-        });
-        return;
+ const handleSubmit = async () => {
+  if (!formData.jobTitle || !formData.jobType || !formData.jobDescription) {
+    toast({
+      title: "Missing Information",
+      description: "Please fill in all required fields before submitting.",
+      variant: "destructive"
+    });
+    return;
+  }
+
+  if (!formData.resumeFile) {
+    toast({
+      title: "Missing Resume",
+      description: "Please upload a resume before submitting.",
+      variant: "destructive"
+    });
+    return;
+  }
+
+  try {
+    const form = new FormData();
+
+    const jobPayload = {
+      workflow_id: 'resume_ranker',
+      job_description: formData.jobDescription || 'No description'
+    };
+
+    form.append('data', JSON.stringify(jobPayload));
+    form.append('resumes', formData.resumeFile);
+
+    const url = 'https://dev187243.service-now.com/api/1763965/resumerankingapi/upload';
+
+    const response = await axios.post(url, form, {
+      auth: {
+        username: 'admin',
+        password: 'aTw3Prz$PR/7'
+      },
+      headers: {
+        Accept: 'application/json'
+        // Don't manually set Content-Type with FormData
       }
-    }
-    setCurrentStep(2);
-  };
-
-  const handleBack = () => {
-    setCurrentStep(1);
-  };
-
-  const handleSaveDraft = () => {
-    toast({
-      title: "Draft Saved",
-      description: "🚧 This feature isn't implemented yet—"
     });
-  };
 
-  const handleSaveAndContinue = () => {
-    if (currentStep === 2) {
-      
-    }
-    
     toast({
-      title: "Job Posted Successfully!",
-      description: "🚧 This feature isn't implemented yet—"
+      title: "Success!",
+      description: "✅ Resume submitted to ServiceNow successfully.",
     });
-  };
+
+  } catch (error) {
+    console.error('❌ Upload failed:', error);
+    toast({
+      title: "Upload Failed",
+      description: "❌ Something went wrong. Check the console for details.",
+      variant: "destructive"
+    });
+  }
+};
+
 
   const props = {
     formData,
     handleInputChange,
-    handleNext,
-    handleBack,
-    handleSaveDraft,
-    handleSaveAndContinue
+    handleSubmit,
   };
 
   return (
@@ -104,13 +117,11 @@ function App() {
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4">
-          <AnimatePresence mode="wait">
-            {currentStep === 1 ? <JobFormStep1 {...props} /> : <JobFormStep2 {...props} />}
-          </AnimatePresence>
-        </div>
-      </div>
+            { <JobFormStep1 {...props} />}
+            </div>
 
       <Toaster />
+    </div>
     </div>
   );
 }

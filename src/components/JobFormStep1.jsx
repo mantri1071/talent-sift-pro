@@ -43,7 +43,7 @@ function JobDescriptionEditor({ value, onChange }) {
   );
 }
 
-const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft }) => {
+const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
   return (
     <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-8">
       <motion.div
@@ -214,21 +214,15 @@ const JobFormStep1 = ({ formData, handleInputChange, handleNext, handleSaveDraft
            />
           </div>
 
-            <div className="flex justify-between pt-6">
-              <Button
-                variant="outline"
-                onClick={handleSaveDraft}
-                className="bg-white/80 hover:bg-white border-gray-300 text-gray-800"
-              >
-                Save Draft
-              </Button>
-              <Button
-                onClick={handleNext}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-              >
-                Save & Continue
-              </Button>
-            </div>
+<div className="flex justify-end pt-6">
+  <Button
+    onClick={handleSubmit}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+  >
+    Submit
+  </Button>
+</div>
+
           </motion.div>
         </motion.div>
       </motion.div>
