@@ -196,7 +196,7 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
             </div>
 
 <ResumeMultiDropzoneStyled
-  onFilesSelected={(files) => handleInputChange('resumeFile', files[0])}
+  onFilesSelected={(files) => handleInputChange('resumeFile', [files[0]])}
   defaultFiles={formData.resumeFile ? [formData.resumeFile] : []}
 />
 
