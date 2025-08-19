@@ -56,8 +56,11 @@ function App() {
     };
 
     form.append('data', JSON.stringify(jobPayload));
+    
+formData.resumeFiles.forEach((file, index) => {
+  form.append('resumes', file); // Or use `resumes[]` if backend expects array
+});
 
-    form.append('resumes', formData.resumeFile);
         // Send to backend API
         const backendResponse = await axios.post('https://3.109.152.70/api/agentic-ai/workflow-exe', form, {
           headers: {
