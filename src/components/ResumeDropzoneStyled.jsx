@@ -2,13 +2,12 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FileText, CheckCircle, Trash2 } from 'lucide-react';
 
-const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
-  const [file, setFile] = useState(defaultFile || null);
+const ResumeMultiDropzone = ({ onFilesSelected, defaultFiles = [] }) => {
+  const [files, setFiles] = useState(defaultFiles);
   const [error, setError] = useState('');
 
-  const MAX_SIZE = 2 * 1024 * 1024; 
+  const MAX_SIZE = 2 * 1024 * 1024;
 
-  
   const onDrop = useCallback(
     (acceptedFiles, fileRejections) => {
       setError('');
@@ -16,7 +15,7 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
       if (fileRejections.length > 0) {
         const rejectedFile = fileRejections[0];
         if (rejectedFile.errors.some(e => e.code === 'file-too-large')) {
-          setError('File size exceeds 2MB. Please upload a smaller file.');
+          setError('One or more files exceed 2MB. Please upload smaller files.');
         } else if (rejectedFile.errors.some(e => e.code === 'file-invalid-type')) {
           setError('Invalid file type. Only PDF and DOCX files are allowed.');
         }
@@ -24,36 +23,35 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
       }
 
       if (acceptedFiles.length > 0) {
-        const uploadedFile = acceptedFiles[0];
-        setFile(uploadedFile);
-        setError('');
-        onFileSelected(uploadedFile);
+        const newFiles = [...files, ...acceptedFiles];
+        setFiles(newFiles);
+        onFilesSelected(newFiles);
       }
     },
-    [onFileSelected]
+    [files, onFilesSelected]
   );
 
-  const removeFile = () => {
-    setFile(null);
-    setError('');
-    onFileSelected(null);
+  const removeFile = (fileToRemove) => {
+    const updatedFiles = files.filter(file => file !== fileToRemove);
+    setFiles(updatedFiles);
+    onFilesSelected(updatedFiles);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
     maxSize: MAX_SIZE,
-    multiple: false
+    multiple: true,
   });
 
   return (
     <div className="space-y-2">
       <label className="flex items-center gap-2 text-slate-800 font-semibold">
         <FileText className="w-4 h-4" />
-        Upload Resume <span className="text-red-500">*</span>
+        Upload Resumes <span className="text-red-500">*</span>
       </label>
 
       <div
@@ -66,25 +64,32 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
         }`}
       >
         <input {...getInputProps()} />
-        {!file ? (
+        {files.length === 0 ? (
           <div className="space-y-1">
-            <p className="text-sm text-gray-600">Drag & drop a resume here, or click to select.</p>
-            <p className="text-sm text-gray-600">PDF or DOCX only. MAX 2MB file size.</p>
+            <p className="text-sm text-gray-600">Drag & drop resumes here, or click to select.</p>
+            <p className="text-sm text-gray-600">PDF or DOCX only. Max 2MB per file.</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-green-600 text-sm font-medium flex items-center gap-2">
-              <CheckCircle className="w-4 h-4" />
-              Selected: <span className="text-green-700 font-bold underline">{file.name}</span>
-            </p>
-            <button
-              type="button"
-              onClick={removeFile}
-              className="text-red-500 text-xs flex items-center gap-1 hover:underline"
-            >
-              <Trash2 className="w-3 h-3" />
-              Remove
-            </button>
+          <div className="w-full space-y-2">
+            {files.map((file, index) => (
+              <div
+                key={`${file.name}-${index}`}
+                className="flex items-center justify-between border rounded px-3 py-1 bg-green-50"
+              >
+                <p className="text-sm text-green-700 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  {file.name}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => removeFile(file)}
+                  className="text-red-500 text-xs flex items-center gap-1 hover:underline"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -94,4 +99,4 @@ const ResumeDropzoneStyled = ({ onFileSelected, defaultFile }) => {
   );
 };
 
-export default ResumeDropzoneStyled;
+export default ResumeMultiDropzone;
