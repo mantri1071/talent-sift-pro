@@ -6,35 +6,32 @@ const ResumeMultiDropzone = ({ onFilesSelected, defaultFiles = [] }) => {
   const [files, setFiles] = useState(defaultFiles);
   const [error, setError] = useState('');
 
-  const MAX_SIZE = 2 * 1024 * 1024;
+  const MAX_SIZE = 2 * 1024 * 1024; // 2MB
 
-  const onDrop = useCallback(
-    (acceptedFiles, fileRejections) => {
-      setError('');
+  const onDrop = useCallback((acceptedFiles, fileRejections) => {
+    setError('');
 
-      if (fileRejections.length > 0) {
-        const rejectedFile = fileRejections[0];
-        if (rejectedFile.errors.some(e => e.code === 'file-too-large')) {
-          setError('One or more files exceed 2MB. Please upload smaller files.');
-        } else if (rejectedFile.errors.some(e => e.code === 'file-invalid-type')) {
-          setError('Invalid file type. Only PDF and DOCX files are allowed.');
-        }
-        return;
+    if (fileRejections.length > 0) {
+      const rejectedFile = fileRejections[0];
+      if (rejectedFile.errors.some(e => e.code === 'file-too-large')) {
+        setError('One or more files exceed 2MB. Please upload smaller files.');
+      } else if (rejectedFile.errors.some(e => e.code === 'file-invalid-type')) {
+        setError('Invalid file type. Only PDF and DOCX files are allowed.');
       }
+      return;
+    }
 
-      if (acceptedFiles.length > 0) {
-        const newFiles = [...files, ...acceptedFiles];
-        setFiles(newFiles);
-        onFilesSelected(newFiles);
-      }
-    },
-    [files, onFilesSelected]
-  );
+    if (acceptedFiles.length > 0) {
+      const newFiles = [...files, ...acceptedFiles];
+      setFiles(newFiles);
+      onFilesSelected(newFiles); // Notify parent
+    }
+  }, [files, onFilesSelected]);
 
   const removeFile = (fileToRemove) => {
     const updatedFiles = files.filter(file => file !== fileToRemove);
     setFiles(updatedFiles);
-    onFilesSelected(updatedFiles);
+    onFilesSelected(updatedFiles); // Notify parent
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -44,7 +41,7 @@ const ResumeMultiDropzone = ({ onFilesSelected, defaultFiles = [] }) => {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
     maxSize: MAX_SIZE,
-    multiple: true,
+    multiple: true, // Allow multiple files
   });
 
   return (
