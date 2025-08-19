@@ -56,7 +56,7 @@ function App() {
     };
 
     form.append('data', JSON.stringify(jobPayload));
-    
+
 formData.resumeFiles.forEach((file, index) => {
   form.append('resumes', file); // Or use `resumes[]` if backend expects array
 });
@@ -71,19 +71,6 @@ formData.resumeFiles.forEach((file, index) => {
         const temp = backendResponse.data.data;
         console.log('temp:',temp);
 
-
-    const url = 'https://dev187243.service-now.com/api/1763965/resumerankingapi/upload';
-
-    const response = await axios.post(url, form, {
-      auth: {
-        username: 'admin',
-        password: 'aTw3Prz$PR/7'
-      },
-      headers: {
-        Accept: 'application/json'
-        // Don't manually set Content-Type with FormData
-      }
-    });
 
     toast({
       title: "Success!",
