@@ -16,7 +16,7 @@ function App() {
     location: '',
     requiredSkills: '',
     jobDescription: '',
-    resumeFile: null, // Initialize resumeFile here
+    resumeFiles: [], // Initialize resumeFile here
   });
 
   const { toast } = useToast();
@@ -38,7 +38,7 @@ function App() {
     return;
   }
 
-  if (!formData.resumeFile) {
+  if (!formData.resumeFiles || formData.resumeFiles.length === 0) {
     toast({
       title: "Missing Resume",
       description: "Please upload a resume before submitting.",
@@ -59,7 +59,7 @@ function App() {
 
     form.append('resumes', formData.resumeFile);
         // Send to backend API
-        const backendResponse = await axios.post('https://65.2.166.232/api/agentic-ai/workflow-exe', form, {
+        const backendResponse = await axios.post('https://3.109.152.70/api/agentic-ai/workflow-exe', form, {
           headers: {
             'Content-Type': 'multipart/form-data'
           },

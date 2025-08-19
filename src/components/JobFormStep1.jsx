@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ResumeDropzoneStyled from '@/components/ResumeDropzoneStyled';
+import ResumeMultiDropzoneStyled from '@/components/ResumeDropzoneStyled';
 import pic from '../pic.png';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; 
@@ -195,10 +195,11 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
               </div>
             </div>
 
-            <ResumeDropzoneStyled
-            onFileSelected={(file) => handleInputChange('resumeFile', file)}
-            defaultFile={formData.resumeFile}
-            />
+<ResumeDropzoneStyled
+  onFilesSelected={(files) => handleInputChange('resumeFile', files[0])}
+  defaultFiles={formData.resumeFile ? [formData.resumeFile] : []}
+/>
+
 
             <div className="space-y-2">
             <Label className="flex items-center gap-2 text-slate-800 font-semibold ">
