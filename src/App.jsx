@@ -6,7 +6,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
 import JobFormStep1 from '@/components/JobFormStep1';
 import logo from './logo.png';
-import axios from 'axios';
 
 function App() {
   const [formData, setFormData] = useState({
@@ -59,21 +58,22 @@ function App() {
       form.append('data', JSON.stringify(jobPayload));
 
       formData.resumeFiles.forEach(file => {
-        form.append('resumes', file); // confirm 'resumes' key expected by backend
+        form.append('resumes', file);
       });
 
-      // NOTE: Use http here, NOT https
-      const backendResponse = await axios.post(
-        'https://3.109.152.70/api/agentic-ai/workflow-exe',
-        form,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          timeout: 30000,
-        }
-      );
+      const response = await fetch('http://3.109.152.70/api/agentic-ai/workflow-exe', {
+        method: 'POST',
+        body: form,
+        // No Content-Type header here; fetch sets it automatically
+      });
 
-      const temp = backendResponse.data.data;
-      console.log('Response data:', temp);
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      console.log('Response data:', result.data);
 
       toast({
         title: "Success!",
