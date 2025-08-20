@@ -16,7 +16,7 @@ function App() {
     location: '',
     requiredSkills: '',
     jobDescription: '',
-    resumeFiles: [], // Initialize resumeFile here
+    resumeFiles: [], // array of uploaded files
   });
 
   const { toast } = useToast();
@@ -28,65 +28,67 @@ function App() {
     }));
   };
 
- const handleSubmit = async () => {
-  if (!formData.jobTitle || !formData.jobType || !formData.jobDescription) {
-    toast({
-      title: "Missing Information",
-      description: "Please fill in all required fields before submitting.",
-      variant: "destructive"
-    });
-    return;
-  }
+  const handleSubmit = async () => {
+    // Validation
+    if (!formData.jobTitle || !formData.jobType || !formData.jobDescription) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  if (!formData.resumeFiles || formData.resumeFiles.length === 0) {
-    toast({
-      title: "Missing Resume",
-      description: "Please upload a resume before submitting.",
-      variant: "destructive"
-    });
-    return;
-  }
+    if (!formData.resumeFiles || formData.resumeFiles.length === 0) {
+      toast({
+        title: "Missing Resume",
+        description: "Please upload a resume before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  try {
-    const form = new FormData();
+    try {
+      const form = new FormData();
 
-    const jobPayload = {
-      workflow_id: 'resume_ranker',
-      job_description: formData.jobDescription || 'No description'
-    };
+      const jobPayload = {
+        workflow_id: 'resume_ranker',
+        job_description: formData.jobDescription || 'No description'
+      };
 
-    form.append('data', JSON.stringify(jobPayload));
+      form.append('data', JSON.stringify(jobPayload));
 
-formData.resumeFiles.forEach((file, index) => {
-  form.append('resumes', file); // Or use `resumes[]` if backend expects array
-});
+      formData.resumeFiles.forEach(file => {
+        form.append('resumes', file); // confirm 'resumes' key expected by backend
+      });
 
-        // Send to backend API
-        const backendResponse = await axios.post('https://3.109.152.70/api/agentic-ai/workflow-exe', form, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          timeout: 30000
-        });
-        const temp = backendResponse.data.data;
-        console.log('temp:',temp);
+      // NOTE: Use http here, NOT https
+      const backendResponse = await axios.post(
+        'http://3.109.152.70/api/agentic-ai/workflow-exe',
+        form,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: 30000,
+        }
+      );
 
+      const temp = backendResponse.data.data;
+      console.log('Response data:', temp);
 
-    toast({
-      title: "Success!",
-      description: "✅ Resume submitted to ServiceNow successfully.",
-    });
+      toast({
+        title: "Success!",
+        description: "✅ Resume submitted successfully.",
+      });
 
-  } catch (error) {
-    console.error('❌ Upload failed:', error);
-    toast({
-      title: "Upload Failed",
-      description: "❌ Something went wrong. Check the console for details.",
-      variant: "destructive"
-    });
-  }
-};
-
+    } catch (error) {
+      console.error('❌ Upload failed:', error);
+      toast({
+        title: "Upload Failed",
+        description: "❌ Something went wrong. Check the console for details.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const props = {
     formData,
@@ -98,7 +100,10 @@ formData.resumeFiles.forEach((file, index) => {
     <div className="min-h-screen bg-gradient-to-br from-cyan-350 via-blue-500 to-blue-600 relative overflow-hidden">
       <Helmet>
         <title>Talent Sift - Job Posting Platform</title>
-        <meta name="description" content="Create and post job opportunities with Talent Sift's intuitive job posting platform" />
+        <meta
+          name="description"
+          content="Create and post job opportunities with Talent Sift's intuitive job posting platform"
+        />
       </Helmet>
 
       <motion.div
@@ -118,11 +123,11 @@ formData.resumeFiles.forEach((file, index) => {
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4">
-            { <JobFormStep1 {...props} />}
-            </div>
+          <JobFormStep1 {...props} />
+        </div>
 
-      <Toaster />
-    </div>
+        <Toaster />
+      </div>
     </div>
   );
 }
