@@ -63,8 +63,8 @@ function App() {
       });
 
       // NOTE: Use http here, NOT https
-      const backendResponse = await axios.post(
-        'https://3.109.152.70/api/agentic-ai/workflow-exe',
+      const backendResponse = await axios.post('/api/agentic-ai/workflow-exe',
+
         form,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
