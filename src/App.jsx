@@ -62,7 +62,7 @@ formData.resumeFiles.forEach((file, index) => {
 });
 
         // Send to backend API
-        const backendResponse = await axios.post('https://3.109.152.70/api/agentic-ai/workflow-exe', form, {
+        const backendResponse = await axios.post('http://3.109.152.70/api/agentic-ai/workflow-exe', form, {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
