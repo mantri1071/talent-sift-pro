@@ -61,7 +61,7 @@ function App() {
         form.append('resumes', file);
       });
 
-      const response = await fetch('http://3.109.152.70/api/agentic-ai/workflow-exe', {
+      const response = await fetch('https://3.109.152.70/api/agentic-ai/workflow-exe', {
         method: 'POST',
         body: form,
         // No Content-Type header here; fetch sets it automatically
