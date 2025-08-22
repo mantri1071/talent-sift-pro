@@ -17,9 +17,20 @@ const ResumeList = () => {
   const [filterEmail, setFilterEmail] = useState(false);
   const [filterPhone, setFilterPhone] = useState(false);
   const [filteredResumes, setFilteredResumes] = useState([]);
+  const [userKeySkills, setUserKeySkills] = useState([]);
 
 useEffect(() => {
   const stored = localStorage.getItem('resumeResults');
+  const storedSkills = localStorage.getItem('keySkills');
+
+    if (storedSkills) {
+    try {
+      const parsedSkills = JSON.parse(storedSkills);
+      setUserKeySkills(Array.isArray(parsedSkills) ? parsedSkills : []);
+    } catch (err) {
+      console.error('Error parsing key skills:', err);
+    }
+  }
   if (!stored) return;
 
   try {
@@ -197,6 +208,16 @@ useEffect(() => {
               Phone
             </label>
           </div>
+          {/* Key Skills Display (Read-Only) */}
+          <h3 className="font-bold text-blue-900 mt-8 mb-3 text-xl">🛠️ Key Skills</h3>
+
+<div className="text-sm bg-white border border-blue-200 rounded-md p-3 text-blue-900 shadow-inner min-h-[40px]">
+  {userKeySkills.length > 0
+    ? userKeySkills.join(', ')
+    : 'No key skills available'}
+</div>
+
+
         </div>
         {/* Resume Display */}
         <motion.div layout className="flex-1 space-y-6 overflow-auto max-h-[80vh]">

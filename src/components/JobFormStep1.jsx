@@ -48,6 +48,13 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
     setIsLoading(true);
     try {
       await handleSubmit(); 
+          const skillsArray = formData.KeySkills
+      .split(',')
+      .map(skill => skill.trim()) 
+      .filter(skill => skill); 
+
+localStorage.setItem('keySkills', JSON.stringify(skillsArray)); 
+
     } catch (error) {
       console.error('Submission error:', error);
     } finally {
@@ -187,9 +194,7 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
                       <SelectItem value="internship">Internship</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+</div>
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-slate-800 font-semibold">
                     <GraduationCap className="w-4 h-4" />
@@ -199,10 +204,9 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
                     placeholder="e.g. JAVA, REACT"
                     value={formData.KeySkills}
                     onChange={(e) => handleInputChange('KeySkills', e.target.value)}
-                    className=" w-[230px] bg-white/70 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className=" w-full bg-white/70 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                     disabled={isLoading}
                   />
-                </div>
                 </div>
                 </div>
 
