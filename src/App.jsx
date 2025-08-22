@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { AnimatePresence, motion } from 'framer-motion';
-
+import { useNavigate } from 'react-router-dom'; 
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
 import JobFormStep1 from '@/components/JobFormStep1';
@@ -15,10 +15,11 @@ function App() {
     location: '',
     requiredSkills: '',
     jobDescription: '',
-    resumeFiles: [], // array of uploaded files
+    resumeFiles: [], 
   });
 
   const { toast } = useToast();
+  const navigate = useNavigate(); 
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -28,7 +29,7 @@ function App() {
   };
 
   const handleSubmit = async () => {
-    // Validation
+    
     if (!formData.jobTitle || !formData.jobType || !formData.jobDescription) {
       toast({
         title: "Missing Information",
@@ -61,10 +62,9 @@ function App() {
         form.append('resumes', file);
       });
 
-      const response = await fetch('https://3.109.152.70/api/agentic-ai/workflow-exe', {
+      const response = await fetch('https://agentic-ai.co.in/api/agentic-ai/workflow-exe', {
         method: 'POST',
         body: form,
-        // No Content-Type header here; fetch sets it automatically
       });
 
       if (!response.ok) {
@@ -75,10 +75,14 @@ function App() {
 
       console.log('Response data:', result.data);
 
+      localStorage.setItem('resumeResults', JSON.stringify(result.data));
+
       toast({
         title: "Success!",
         description: "✅ Resume submitted successfully.",
       });
+
+      navigate('/resumes');
 
     } catch (error) {
       console.error('❌ Upload failed:', error);
@@ -119,7 +123,7 @@ function App() {
 
       <div className="relative z-10 min-h-screen flex flex-col">
         <div className="p-8">
-          <img src={logo} alt="Start IT Now Logo" className="h-10" />
+          <img src={logo} alt="Talent Sift Logo" className="h-10" />
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4">

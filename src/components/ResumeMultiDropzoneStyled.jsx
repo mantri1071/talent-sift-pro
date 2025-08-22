@@ -6,7 +6,7 @@ const ResumeMultiDropzone = ({ onFilesSelected, defaultFiles = [] }) => {
   const [files, setFiles] = useState(defaultFiles);
   const [error, setError] = useState('');
 
-  const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+  const MAX_SIZE = 2 * 1024 * 1024; 
 
   const onDrop = useCallback((acceptedFiles, fileRejections) => {
     setError('');
@@ -24,14 +24,14 @@ const ResumeMultiDropzone = ({ onFilesSelected, defaultFiles = [] }) => {
     if (acceptedFiles.length > 0) {
       const newFiles = [...files, ...acceptedFiles];
       setFiles(newFiles);
-      onFilesSelected(newFiles); // Notify parent
+      onFilesSelected(newFiles); 
     }
   }, [files, onFilesSelected]);
 
   const removeFile = (fileToRemove) => {
     const updatedFiles = files.filter(file => file !== fileToRemove);
     setFiles(updatedFiles);
-    onFilesSelected(updatedFiles); // Notify parent
+    onFilesSelected(updatedFiles); 
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -41,7 +41,7 @@ const ResumeMultiDropzone = ({ onFilesSelected, defaultFiles = [] }) => {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
     maxSize: MAX_SIZE,
-    multiple: true, // Allow multiple files
+    multiple: true, 
   });
 
   return (
