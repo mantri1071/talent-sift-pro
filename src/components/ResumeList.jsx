@@ -208,13 +208,14 @@ useEffect(() => {
               Phone
             </label>
           </div>
+<div>
           {/* Key Skills Display (Read-Only) */}
           <h3 className="font-bold text-blue-900 mt-8 mb-3 text-xl">🛠️ Key Skills</h3>
-
 <div className="text-sm bg-white border border-blue-200 rounded-md p-3 text-blue-900 shadow-inner min-h-[40px]">
   {userKeySkills.length > 0
     ? userKeySkills.join(', ')
     : 'No key skills available'}
+</div>
 </div>
 
 
