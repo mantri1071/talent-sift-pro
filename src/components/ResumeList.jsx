@@ -32,6 +32,7 @@ useEffect(() => {
       experience: item.experience || 3,
       email: item.email || null,
       phone: item.phone || null,
+      keySkills: item.keySkills || [],
     }));
     setResumes(mapped);
   } catch (err) {
@@ -197,6 +198,19 @@ useEffect(() => {
             </label>
           </div>
         </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-2">
+        <label className="flex items-center gap-2 text-slate-800 font-semibold">
+          Key Skills 
+        </label>
+        <Input
+          value={keySkills}
+          readOnly
+          className="w-[230px] bg-gray-100 border-gray-300 cursor-not-allowed"
+        />
+      </div>
+    </div>
 
         {/* Resume Display */}
         <motion.div layout className="flex-1 space-y-6 overflow-auto max-h-[80vh]">
