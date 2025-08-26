@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, GraduationCap, Clock, Star, FileText, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,40 +21,73 @@ const FloatingIcon = ({ children, className }) => (
   </motion.div>
 );
 
-function JobDescriptionEditor({ value, onChange }) {
+function JobDescriptionEditor({ value, onChange, minWords = 100, maxWords = 200, onValidChange, readOnly }) {
+  const [error, setError] = useState('');
+
+  const countWords = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const text = div.textContent || div.innerText || '';
+    return text.trim().split(/\s+/).filter(Boolean).length;
+  };
+
+  useEffect(() => {
+    const wordCount = countWords(value);
+    if (wordCount < minWords) {
+      setError(`Job description must be at least ${minWords} words (currently ${wordCount})`);
+      onValidChange && onValidChange(false);
+    } else if (wordCount > maxWords) {
+      setError(`Job description must be no more than ${maxWords} words (currently ${wordCount})`);
+      onValidChange && onValidChange(false);
+    } else {
+      setError('');
+      onValidChange && onValidChange(true);
+    }
+  }, [value, minWords, maxWords, onValidChange]);
+
   return (
-    <ReactQuill
-      theme="snow"
-      value={value}
-      onChange={onChange}
-      modules={{
-        toolbar: [
-          ['bold', 'italic', 'underline'],
-          [{ header: [1, 2, 3, false] }],
-          ['clean'],
-        ],
-      }}
-      formats={['bold', 'italic', 'underline', 'header']}
-      placeholder="Describe the role, responsibilities, requirements, etc..."
-      className="bg-white/70 border border-gray-300 rounded-md min-h-[200px]"
-    />
+    <div className="relative">
+      <ReactQuill
+        theme="snow"
+        value={value}
+        onChange={onChange}
+        modules={{
+          toolbar: [
+            ['bold', 'italic', 'underline'],
+            [{ header: [1, 2, 3, false] }],
+            ['clean'],
+          ],
+        }}
+        formats={['bold', 'italic', 'underline', 'header']}
+        placeholder={`Describe the role, responsibilities, requirements...`}
+        className="bg-white/70 border border-gray-300 rounded-md min-h-[200px]"
+        readOnly={readOnly}
+      />
+      {error && <p className="text-red-600 mt-1 text-sm">{error}</p>}
+    </div>
   );
 }
 
 const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [jobDescriptionIsValid, setJobDescriptionIsValid] = useState(false);
 
   const onSubmit = async () => {
+    if (!jobDescriptionIsValid) {
+      alert('Please enter a valid job description within the required word limits.');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      await handleSubmit(); 
-          const skillsArray = formData.KeySkills
-      .split(',')
-      .map(skill => skill.trim()) 
-      .filter(skill => skill); 
+      await handleSubmit();
 
-localStorage.setItem('keySkills', JSON.stringify(skillsArray)); 
+      const skillsArray = formData.requiredSkills
+        .split(',')
+        .map(skill => skill.trim())
+        .filter(skill => skill);
 
+      localStorage.setItem('keySkills', JSON.stringify(skillsArray));
     } catch (error) {
       console.error('Submission error:', error);
     } finally {
@@ -71,21 +104,20 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
       )}
 
       <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-8">
+        {/* Left: Visual */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -50 }}
           transition={{ duration: 0.6 }}
           className="flex-1 flex items-center justify-center mb-8 lg:mb-0"
         >
           <div className="relative w-full max-w-6xl mx-auto">
             <div className="mb-6 text-center max-w-3xl mx-auto px-4">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-gray-900">
-                <span className='text-white'>Resume Ranking</span><br />
-                <span>for Perfect Matches</span>
+              <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight text-white">
+                Resume Ranking<br />for Perfect Matches
               </h1>
-              <p className="mt-4 text-base md:text-lg text-gray-800">
-                Our AI-powered tool compares resumes to job descriptions, finding you the best candidates and saving hours of screening time.
+              <p className="mt-4 text-lg text-gray-800">
+                Our AI-powered tool compares resumes to job descriptions, helping you find the most qualified candidates.
               </p>
             </div>
             <div>
@@ -97,17 +129,18 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
               </FloatingIcon>
               <motion.img
                 src={pic}
-                alt="Two colleagues collaborating on a project"
+                alt="Collaboration"
                 className="w-full h-auto rounded-3xl shadow-2xl object-cover"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                whileHover={{ scale: 1.05, y: -10, transition: { duration: 0.4 } }}
-                transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+                whileHover={{ scale: 1.05, y: -10 }}
+                transition={{ duration: 0.8 }}
               />
             </div>
           </div>
         </motion.div>
 
+        {/* Right: Form */}
         <motion.div layout className="flex-1 w-full max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -115,24 +148,17 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
             transition={{ duration: 0.6 }}
             className="bg-sky-50/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8"
           >
-            <div className="flex items-center justify-start mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">T</span>
-                </div>
-                <span className="text-xl font-bold text-gray-800">TALENT SIFT</span>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold">T</span>
               </div>
+              <span className="text-xl font-bold text-gray-800">TALENT SIFT</span>
             </div>
 
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6"
-            >
+            {/* Form Fields */}
+            <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Job Title */}
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-slate-800 font-semibold">
                     <Briefcase className="w-4 h-4" />
@@ -142,10 +168,12 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
                     placeholder="e.g. Senior Frontend Developer"
                     value={formData.jobTitle}
                     onChange={(e) => handleInputChange('jobTitle', e.target.value)}
-                    className="bg-white/70 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="bg-white/70"
                     disabled={isLoading}
                   />
                 </div>
+
+                {/* Years of Experience */}
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-slate-800 font-semibold">
                     <Clock className="w-4 h-4" />
@@ -159,19 +187,17 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
                     onChange={(e) => {
                       const value = e.target.value;
                       if (/^\d*$/.test(value)) {
-                        const numericValue = Number(value);
-                        if (value === '' || (numericValue >= 0 && numericValue <= 30)) {
-                          handleInputChange('yearsOfExperience', value);
-                        }
+                        handleInputChange('yearsOfExperience', value);
                       }
                     }}
                     onWheel={(e) => e.target.blur()}
-                    className="bg-white/70 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="bg-white/70"
                     disabled={isLoading}
                   />
                 </div>
               </div>
 
+              {/* Job Type & Skills */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-slate-800 font-semibold">
@@ -183,8 +209,8 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
                     onValueChange={(value) => handleInputChange('jobType', value)}
                     disabled={isLoading}
                   >
-                    <SelectTrigger className="bg-white/70 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                      <SelectValue placeholder="select job type" />
+                    <SelectTrigger className="bg-white/70">
+                      <SelectValue placeholder="Select job type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="full-time">Full Time</SelectItem>
@@ -194,7 +220,7 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
                       <SelectItem value="internship">Internship</SelectItem>
                     </SelectContent>
                   </Select>
-</div>
+                </div>
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-slate-800 font-semibold">
                     <GraduationCap className="w-4 h-4" />
@@ -202,20 +228,22 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
                   </Label>
                   <Input
                     placeholder="e.g. JAVA, REACT"
-                    value={formData.KeySkills}
-                    onChange={(e) => handleInputChange('KeySkills', e.target.value)}
-                    className=" w-full bg-white/70 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    value={formData.requiredSkills}
+                    onChange={(e) => handleInputChange('requiredSkills', e.target.value)}
+                    className="bg-white/70"
                     disabled={isLoading}
                   />
                 </div>
-                </div>
+              </div>
 
+              {/* Resume Upload */}
               <ResumeMultiDropzoneStyled
                 onFilesSelected={(files) => handleInputChange('resumeFiles', files)}
                 defaultFiles={formData.resumeFiles}
                 disabled={isLoading}
               />
 
+              {/* Job Description */}
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-slate-800 font-semibold">
                   <FileText className="w-4 h-4" />
@@ -224,20 +252,22 @@ localStorage.setItem('keySkills', JSON.stringify(skillsArray));
                 <JobDescriptionEditor
                   value={formData.jobDescription}
                   onChange={(value) => handleInputChange('jobDescription', value)}
+                  minWords={100}
+                  maxWords={200}
+                  onValidChange={setJobDescriptionIsValid}
                   readOnly={isLoading}
                 />
               </div>
 
-              <div className="flex justify-end pt-6">
-                <Button
-                  onClick={onSubmit}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Processing...' : 'Submit'}
-                </Button>
-              </div>
-            </motion.div>
+              {/* Submit Button */}
+              <Button
+                onClick={onSubmit}
+                disabled={isLoading || !jobDescriptionIsValid}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+              >
+                {isLoading ? 'Processing...' : 'Submit'}
+              </Button>
+            </div>
           </motion.div>
         </motion.div>
       </div>
