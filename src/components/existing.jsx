@@ -76,7 +76,8 @@ const ResumeList = () => {
         experience: extractYearsOfExperience(item.justification),
         email: item.email,
         phone: item.phone,
-        keySkills: [exeSkill], 
+        keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
+ 
       }));
 
       setSearchedResumes(mappedResumes);
@@ -149,20 +150,11 @@ const ResumeList = () => {
 
           <input
             type="text"
-            placeholder="Search name or email..."
+            placeholder="Search ..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             disabled={loading}
             className="mb-4 px-4 py-3 rounded-lg border border-blue-300 focus:outline-none text-gray-700"
-          />
-
-          <input
-            type="text"
-            placeholder="Search by Key Skill..."
-            value={keySkillQuery}
-            onChange={e => setKeySkillQuery(e.target.value)}
-            disabled={loading}
-            className="mb-6 px-4 py-3 rounded-lg border border-blue-300 focus:outline-none text-gray-700"
           />
 
           {/* Score Filter */}
@@ -250,6 +242,22 @@ const ResumeList = () => {
               Phone
             </label>
           </div>
+           {/* Key Skills Display (Read-only) */}
+{userKeySkills.length > 0 && (
+  <div className="mt-6">
+    <label className="block font-semibold text-blue-800 mb-2 text-lg">Key Skills</label>
+    <div className="bg-white border border-blue-300 rounded-md p-3 max-h-32 overflow-y-auto space-y-1">
+      {userKeySkills.map((skill, index) => (
+        <div
+          key={index}
+          className="bg-blue-200 text-blue-900 text-sm px-2 py-1 rounded-md inline-block"
+        >
+          {skill}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
         </div>
 
         {/* Resume List Area */}
@@ -280,16 +288,10 @@ const ResumeList = () => {
                     <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
                       Score: {resume.Rank} ({getRankLabel(resume.Rank)})
                     </div>
-                    <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
-                      Experience: {resume.experience} yrs
-                      {resume.keySkills?.length > 0 && (
-                        <>
-                          {' | '}
-                          Key Skills: {resume.keySkills.join(', ')}
-                        </>
-                      )}
-                    </div>
-                  </div>
+                   <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
+                    Experience: {resume.experience} yrs
+                   </div>
+                   </div>
 
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">
                     {resume.justification}

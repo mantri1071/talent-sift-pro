@@ -206,6 +206,12 @@ const ResumeList = () => {
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
             <h3 className="text-2xl font-semibold text-black-900">Dashboard</h3>
+                  {/* Floating Org ID Display */}
+      {orgId && (
+        <div className="fixed bottom-4 right-4 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+          Req ID: {orgId}
+        </div>
+      )}
           </div>
           <p className="text-blue-800 font-medium mb-4">
             Showing <span className="font-bold">{filteredResumes.length}</span> of{' '}
