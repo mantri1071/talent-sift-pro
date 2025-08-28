@@ -1,7 +1,7 @@
+// ...imports
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Range } from 'react-range';
-
 
 const extractYearsOfExperience = (text = '') => {
   const match = text.match(/([0-9]*\.?[0-9]+)\s*(\+)?\s*(years|yrs|year|yr)/i);
@@ -77,7 +77,6 @@ const ResumeList = () => {
         email: item.email,
         phone: item.phone,
         keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
- 
       }));
 
       setSearchedResumes(mappedResumes);
@@ -157,12 +156,8 @@ const ResumeList = () => {
             className="mb-4 px-4 py-3 rounded-lg border border-blue-300 focus:outline-none text-gray-700"
           />
 
-          {/* Score Filter */}
+          {/* Score Range */}
           <label className="font-semibold text-blue-800 mb-3 block text-lg">Score Range</label>
-          <div className="flex justify-between mb-3 text-blue-900 font-semibold text-sm">
-            <span>{scoreRange[0]}</span>
-            <span>{scoreRange[1]}</span>
-          </div>
           <Range
             step={1}
             min={1}
@@ -185,12 +180,8 @@ const ResumeList = () => {
             renderThumb={renderScoreThumb}
           />
 
-          {/* Experience Filter */}
+          {/* Experience Range */}
           <label className="font-semibold text-blue-800 mt-6 mb-3 block text-lg">Experience (years)</label>
-          <div className="flex justify-between mb-3 text-blue-900 font-semibold text-sm">
-            <span>{experienceRange[0]}</span>
-            <span>{experienceRange[1]}</span>
-          </div>
           <Range
             step={1}
             min={0}
@@ -219,7 +210,7 @@ const ResumeList = () => {
             )}
           />
 
-          {/* Email & Phone Filters */}
+          {/* Email and Phone */}
           <div className="mt-6 space-y-3">
             <label className="inline-flex items-center gap-2 text-blue-900 font-semibold cursor-pointer">
               <input
@@ -242,25 +233,17 @@ const ResumeList = () => {
               Phone
             </label>
           </div>
-           {/* Key Skills Display (Read-only) */}
-{userKeySkills.length > 0 && (
-  <div className="mt-6">
-    <label className="block font-semibold text-blue-800 mb-2 text-lg">Key Skills</label>
-    <div className="bg-white border border-blue-300 rounded-md p-3 max-h-32 overflow-y-auto space-y-1">
-      {userKeySkills.map((skill, index) => (
-        <div
-          key={index}
-          className="bg-blue-200 text-blue-900 text-sm px-2 py-1 rounded-md inline-block"
-        >
-          {skill}
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+
+          {/* Key Skills */}
+          <div>
+            <h3 className="font-bold text-blue-900 mt-8 mb-3 text-xl">🛠️ Key Skills</h3>
+            <div className="text-sm bg-white border border-blue-200 rounded-md p-3 text-blue-900 shadow-inner min-h-[40px]">
+              {userKeySkills.length > 0 ? userKeySkills.join(', ') : 'No key skills available'}
+            </div>
+          </div>
         </div>
 
-        {/* Resume List Area */}
+        {/* Resume List */}
         <motion.div layout className="flex-1 space-y-6 overflow-auto max-h-[80vh]">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
@@ -288,10 +271,10 @@ const ResumeList = () => {
                     <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
                       Score: {resume.Rank} ({getRankLabel(resume.Rank)})
                     </div>
-                   <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
-                    Experience: {resume.experience} yrs
-                   </div>
-                   </div>
+                    <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
+                      Experience: {resume.experience} yrs
+                    </div>
+                  </div>
 
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">
                     {resume.justification}

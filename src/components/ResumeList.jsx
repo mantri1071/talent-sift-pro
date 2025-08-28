@@ -199,6 +199,15 @@ const ResumeList = () => {
               Phone
             </label>
           </div>
+
+          {/* Key Skills */}
+          <div>
+            <h3 className="font-bold text-blue-900 mt-8 mb-3 text-xl">🛠️ Key Skills</h3>
+            <div className="text-sm bg-white border border-blue-200 rounded-md p-3 text-blue-900 shadow-inner min-h-[40px]">
+              {userKeySkills.length > 0 ? userKeySkills.join(', ') : 'No key skills available'}
+            </div>
+          </div>
+
         </div>
 
         {/* Resume Results */}
@@ -206,9 +215,10 @@ const ResumeList = () => {
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
             <h3 className="text-2xl font-semibold text-black-900">Dashboard</h3>
-                  {/* Floating Org ID Display */}
+
+        {/* Floating Org ID Display */}
       {orgId && (
-        <div className="fixed bottom-4 right-4 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+        <div className="fixed top-20 right-4 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
           Req ID: {orgId}
         </div>
       )}
@@ -237,11 +247,6 @@ const ResumeList = () => {
                     </div>
                     <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
                       Experience: {resume.experience} yrs
-                      {resume.keySkills?.length > 0 && (
-                        <>
-                          {' | '}Key Skills: {resume.keySkills.join(', ')}
-                        </>
-                      )}
                     </div>
                   </div>
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">
@@ -253,13 +258,6 @@ const ResumeList = () => {
           </ul>
         </motion.div>
       </div>
-
-      {/* Floating Org ID Display */}
-      {orgId && (
-        <div className="fixed bottom-4 right-4 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
-          Req ID: {orgId}
-        </div>
-      )}
     </div>
   );
 };
