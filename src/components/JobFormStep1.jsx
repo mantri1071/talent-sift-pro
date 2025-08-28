@@ -10,17 +10,19 @@ import pic from '../pic.png';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
+// FloatingIcon
 const FloatingIcon = ({ children, className }) => (
   <motion.div
     className={`absolute bg-white/20 backdrop-blur-sm p-3 rounded-full shadow-lg ${className}`}
     initial={{ y: 0, opacity: 0, scale: 0.5 }}
     animate={{ y: [0, -10, 0], opacity: 1, scale: 1 }}
-    transition={{ duration: 3, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }}
+    transition={{ duration: 3, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
   >
     {children}
   </motion.div>
 );
 
+// JobDescriptionEditor
 function JobDescriptionEditor({ value, onChange, minWords = 100, maxWords = 200, onValidChange, readOnly }) {
   const [error, setError] = useState('');
 
@@ -59,7 +61,7 @@ function JobDescriptionEditor({ value, onChange, minWords = 100, maxWords = 200,
           ],
         }}
         formats={['bold', 'italic', 'underline', 'header']}
-        placeholder={`Describe the role, responsibilities, requirements...`}
+        placeholder="Describe the role, responsibilities, requirements..."
         className="bg-white/70 border border-gray-300 rounded-md min-h-[200px]"
         readOnly={readOnly}
       />
@@ -68,25 +70,36 @@ function JobDescriptionEditor({ value, onChange, minWords = 100, maxWords = 200,
   );
 }
 
-const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
+const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubmit }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [jobDescriptionIsValid, setJobDescriptionIsValid] = useState(false);
+  const [mode, setMode] = useState('new'); // 'new' or 'existing'
+  const [errors, setErrors] = useState({});
 
-  const onSubmit = async () => {
-    if (!jobDescriptionIsValid) {
-      alert('Please enter a valid job description within the required word limits.');
-      return;
+  // validate for new
+  const validate = () => {
+    const newErrors = {};
+    if (mode === 'new') {
+      if (!formData.jobTitle) newErrors.jobTitle = 'Job Title is required';
+      if (!formData.jobType) newErrors.jobType = 'Job Type is required';
+      if (!formData.requiredSkills) newErrors.requiredSkills = 'Please enter one or more skills';
+      if (!jobDescriptionIsValid) newErrors.jobDescription = 'Job description must be valid';
+      if (!formData.resumeFiles || formData.resumeFiles.length === 0) newErrors.resumeFiles = 'At least one resume must be uploaded';
     }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
+  // handle submit (for new mode only now)
+  const onSubmit = async () => {
+    if (!validate()) return;
     setIsLoading(true);
     try {
-      await handleSubmit();
-
+      await onNewSubmit(formData);
       const skillsArray = formData.requiredSkills
         .split(',')
-        .map(skill => skill.trim())
-        .filter(skill => skill);
-
+        .map((skill) => skill.trim())
+        .filter(Boolean);
       localStorage.setItem('keySkills', JSON.stringify(skillsArray));
     } catch (error) {
       console.error('Submission error:', error);
@@ -95,6 +108,23 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
     }
   };
 
+  // when mode switches to existing, trigger onExistingSubmit immediately
+  useEffect(() => {
+    const runExisting = async () => {
+      if (mode === 'existing') {
+        setIsLoading(true);
+        try {
+          await onExistingSubmit(); // no caseId anymore
+        } catch (error) {
+          console.error('Existing submit error:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    runExisting();
+  }, [mode, onExistingSubmit]);
+
   return (
     <>
       {isLoading && (
@@ -102,9 +132,8 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
           <div className="text-lg font-semibold text-blue-600 animate-pulse">Processing...</div>
         </div>
       )}
-
       <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-8">
-        {/* Left: Visual */}
+        {/* Left side */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -114,7 +143,8 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
           <div className="relative w-full max-w-6xl mx-auto">
             <div className="mb-6 text-center max-w-3xl mx-auto px-4">
               <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight text-white">
-                Resume Ranking<br />for Perfect Matches
+                Resume Ranking <br />
+                <span className="text-black">for Perfect Matches</span>
               </h1>
               <p className="mt-4 text-lg text-gray-800">
                 Our AI-powered tool compares resumes to job descriptions, helping you find the most qualified candidates.
@@ -148,126 +178,153 @@ const JobFormStep1 = ({ formData, handleInputChange, handleSubmit }) => {
             transition={{ duration: 0.6 }}
             className="bg-sky-50/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8"
           >
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">T</span>
-              </div>
-              <span className="text-xl font-bold text-gray-800">TALENT SIFT</span>
-            </div>
-
-            {/* Form Fields */}
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Job Title */}
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                    <Briefcase className="w-4 h-4" />
-                    Job Title <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    placeholder="e.g. Senior Frontend Developer"
-                    value={formData.jobTitle}
-                    onChange={(e) => handleInputChange('jobTitle', e.target.value)}
-                    className="bg-white/70"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                {/* Years of Experience */}
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                    <Clock className="w-4 h-4" />
-                    Years of Experience
-                  </Label>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="e.g. 3"
-                    value={formData.yearsOfExperience}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (/^\d*$/.test(value)) {
-                        handleInputChange('yearsOfExperience', value);
-                      }
-                    }}
-                    onWheel={(e) => e.target.blur()}
-                    className="bg-white/70"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-
-              {/* Job Type & Skills */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                    <Users className="w-4 h-4" />
-                    Job Type <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
-                    value={formData.jobType}
-                    onValueChange={(value) => handleInputChange('jobType', value)}
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger className="bg-white/70">
-                      <SelectValue placeholder="Select job type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full-time">Full Time</SelectItem>
-                      <SelectItem value="part-time">Part Time</SelectItem>
-                      <SelectItem value="contract">Contract</SelectItem>
-                      <SelectItem value="freelance">Freelance</SelectItem>
-                      <SelectItem value="internship">Internship</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                    <GraduationCap className="w-4 h-4" />
-                    Key Skills <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    placeholder="e.g. JAVA, REACT"
-                    value={formData.requiredSkills}
-                    onChange={(e) => handleInputChange('requiredSkills', e.target.value)}
-                    className="bg-white/70"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-
-              {/* Resume Upload */}
-              <ResumeMultiDropzoneStyled
-                onFilesSelected={(files) => handleInputChange('resumeFiles', files)}
-                defaultFiles={formData.resumeFiles}
-                disabled={isLoading}
-              />
-
-              {/* Job Description */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                  <FileText className="w-4 h-4" />
-                  Job Description <span className="text-red-500">*</span>
-                </Label>
-                <JobDescriptionEditor
-                  value={formData.jobDescription}
-                  onChange={(value) => handleInputChange('jobDescription', value)}
-                  minWords={100}
-                  maxWords={200}
-                  onValidChange={setJobDescriptionIsValid}
-                  readOnly={isLoading}
+            {/* Mode selection */}
+            <div className="mb-6 flex items-center space-x-6">
+              <label className="inline-flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="mode"
+                  value="new"
+                  checked={mode === 'new'}
+                  onChange={() => setMode('new')}
+                  disabled={isLoading}
                 />
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                onClick={onSubmit}
-                disabled={isLoading || !jobDescriptionIsValid}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-              >
-                {isLoading ? 'Processing...' : 'Submit'}
-              </Button>
+                <span>New</span>
+              </label>
+              <label className="inline-flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="mode"
+                  value="existing"
+                  checked={mode === 'existing'}
+                  onChange={() => setMode('existing')}
+                  disabled={isLoading}
+                />
+                <span>Existing</span>
+              </label>
             </div>
+
+            {/* New mode: full form */}
+            {mode === 'new' && (
+              <>
+                {/* Job Title */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2 text-slate-800 font-semibold">
+                      <Briefcase className="w-4 h-4" />
+                      Job Title <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      placeholder="e.g. Senior Frontend Developer"
+                      value={formData.jobTitle}
+                      onChange={(e) => handleInputChange('jobTitle', e.target.value)}
+                      className="bg-white/70"
+                      disabled={isLoading}
+                    />
+                    {errors.jobTitle && <p className="text-red-600 text-sm">{errors.jobTitle}</p>}
+                  </div>
+
+                  {/* Years of Experience */}
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2 text-slate-800 font-semibold ">
+                      <Clock className="w-4 h-4" />
+                      Years of Experience
+                    </Label>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="e.g. 3"
+                      value={formData.yearsOfExperience}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^\d*$/.test(value)) {
+                          handleInputChange('yearsOfExperience', value);
+                        }
+                      }}
+                      onWheel={(e) => e.target.blur()}
+                      className="bg-white/70"
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                {/* Job Type & Skills */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5 mb-4">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2 text-slate-800 font-semibold">
+                      <Users className="w-4 h-4" />
+                      Job Type <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={formData.jobType}
+                      onValueChange={(value) => handleInputChange('jobType', value)}
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger className="bg-white/70">
+                        <SelectValue placeholder="Select job type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="full-time">Full Time</SelectItem>
+                        <SelectItem value="part-time">Part Time</SelectItem>
+                        <SelectItem value="contract">Contract</SelectItem>
+                        <SelectItem value="freelance">Freelance</SelectItem>
+                        <SelectItem value="internship">Internship</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.jobType && <p className="text-red-600 text-sm">{errors.jobType}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2 text-slate-800 font-semibold">
+                      <GraduationCap className="w-4 h-4" />
+                      Key Skills <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      placeholder="e.g. JAVA, REACT"
+                      value={formData.requiredSkills}
+                      onChange={(e) => handleInputChange('requiredSkills', e.target.value)}
+                      className="bg-white/70"
+                      disabled={isLoading}
+                    />
+                    {errors.requiredSkills && <p className="text-red-600 text-sm">{errors.requiredSkills}</p>}
+                  </div>
+                </div>
+
+                {/* Resume Upload */}
+                <ResumeMultiDropzoneStyled
+                  onFilesSelected={(files) => handleInputChange('resumeFiles', files)}
+                  defaultFiles={formData.resumeFiles}
+                  disabled={isLoading}
+                />
+                {errors.resumeFiles && <p className="text-red-600 text-sm">{errors.resumeFiles}</p>}
+
+                {/* Job Description */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2 text-slate-800 font-semibold mt-4 mb-2">
+                    <FileText className="w-4 h-4" />
+                    Job Description <span className="text-red-500">*</span>
+                  </Label>
+                  <JobDescriptionEditor
+                    value={formData.jobDescription}
+                    onChange={(value) => handleInputChange('jobDescription', value)}
+                    minWords={100}
+                    maxWords={200}
+                    onValidChange={setJobDescriptionIsValid}
+                    readOnly={isLoading}
+                  />
+                  {errors.jobDescription && <p className="text-red-600 text-sm">{errors.jobDescription}</p>}
+                </div>
+
+                {/* Submit for new */}
+                <Button
+                  onClick={onSubmit}
+                  disabled={isLoading || !jobDescriptionIsValid}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 mt-4"
+                >
+                  {isLoading ? 'Processing...' : 'Submit'}
+                </Button>
+              </>
+            )}
           </motion.div>
         </motion.div>
       </div>
