@@ -9,10 +9,6 @@ const extractYearsOfExperience = (text = '') => {
 };
 
 const getRankLabel = (score) => {
-  if (score >= 9) return '≥ 9';
-  if (score >= 8) return '≥ 8';
-  if (score >= 7) return '≥ 7';
-  return '≥ 6';
 };
 
 const ResumeList = () => {
@@ -43,7 +39,7 @@ const ResumeList = () => {
 
   const fetchResumesByOrgId = useCallback(async () => {
     if (!orgId.trim()) {
-      setError("Please enter Case ID / Org ID.");
+      setError("Please enter Case ID.");
       setSearchedResumes([]);
       return;
     }
@@ -63,7 +59,7 @@ const ResumeList = () => {
       const exeSkill = data.data[0]?.exe_name || "";
 
       if (!Array.isArray(resumesData) || resumesData.length === 0) {
-        setError("No resumes found for this Case ID / Org ID.");
+        setError("No resumes found for this Case ID.");
         setSearchedResumes([]);
         return;
       }
@@ -117,7 +113,6 @@ const ResumeList = () => {
 
   const renderScoreThumb = ({ index, props }) => (
     <div {...props} className="h-5 w-5 rounded-full bg-blue-600 shadow-md cursor-pointer" key={index}>
-      <div className="text-white text-xs mt-6 text-center w-10 -ml-2">{scoreRange[index]}</div>
     </div>
   );
 
@@ -158,6 +153,9 @@ const ResumeList = () => {
 
           {/* Score Range */}
           <label className="font-semibold text-blue-800 mb-3 block text-lg">Score Range</label>
+            <div className="flex justify-between mb-3 text-blue-900 font-semibold text-sm">
+            <span>{scoreRange[0]}</span><span>{scoreRange[1]}</span>
+            </div>
           <Range
             step={1}
             min={1}
@@ -182,6 +180,9 @@ const ResumeList = () => {
 
           {/* Experience Range */}
           <label className="font-semibold text-blue-800 mt-6 mb-3 block text-lg">Experience (years)</label>
+          <div className="flex justify-between mb-3 text-blue-900 font-semibold text-sm">
+            <span>{scoreRange[0]}</span><span>{scoreRange[1]}</span>
+          </div>
           <Range
             step={1}
             min={0}
@@ -203,36 +204,34 @@ const ResumeList = () => {
             )}
             renderThumb={({ index, props }) => (
               <div {...props} key={index} className="h-5 w-5 rounded-full bg-blue-600 shadow-md cursor-pointer">
-                <div className="text-white text-xs mt-6 text-center w-10 -ml-2">
-                  {experienceRange[index]}
                 </div>
-              </div>
             )}
           />
 
           {/* Email and Phone */}
-          <div className="mt-6 space-y-3">
-            <label className="inline-flex items-center gap-2 text-blue-900 font-semibold cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filterEmail}
-                onChange={() => setFilterEmail(!filterEmail)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                disabled={loading}
-              />
-              Email
-            </label>
-            <label className="inline-flex items-center gap-2 text-blue-900 font-semibold cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filterPhone}
-                onChange={() => setFilterPhone(!filterPhone)}
-                className="rounded border-gray-300 text-blue-600"
-                disabled={loading}
-              />
-              Phone
-            </label>
-          </div>
+<div className="mt-6 flex flex-row gap-x-6">
+  <label className="inline-flex items-center gap-2 text-blue-900 font-semibold cursor-pointer">
+    <input
+      type="checkbox"
+      checked={filterEmail}
+      onChange={() => setFilterEmail(!filterEmail)}
+      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+      disabled={loading}
+    />
+    Email
+  </label>
+
+  <label className="inline-flex items-center gap-2 text-blue-900 font-semibold cursor-pointer">
+    <input
+      type="checkbox"
+      checked={filterPhone}
+      onChange={() => setFilterPhone(!filterPhone)}
+      className="rounded border-gray-300 text-blue-600"
+      disabled={loading}
+    />
+    Phone
+  </label>
+</div>
 
           {/* Key Skills */}
           <div>
@@ -247,12 +246,20 @@ const ResumeList = () => {
         <motion.div layout className="flex-1 space-y-6 overflow-auto max-h-[80vh]">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
-            <h3 className="text-2xl font-semibold text-black-900">Dashboard</h3>
           </div>
-          <p className="text-blue-800 font-medium mb-4">
-            Showing <span className="font-bold">{filteredResumes.length}</span> of{' '}
-            <span className="font-bold">{combinedResumes.length}</span> resumes
-          </p>
+<div className="flex justify-between items-center mb-4">
+  {/* Left: Showing resumes */}
+  <p className="text-blue-800 font-medium">
+    Showing <span className="font-bold">{filteredResumes.length}</span> of{' '}
+    <span className="font-bold">{combinedResumes.length}</span> resumes
+  </p>
+
+  {/* Right: Score Range */}
+  <p className="text-blue-800 font-medium">
+    <span className="font-bold"></span> Score Range 1 - 10
+  </p>
+</div>
+
 
           <ul className="space-y-4">
             {filteredResumes.length === 0 ? (
@@ -269,7 +276,7 @@ const ResumeList = () => {
                     <div className="text-blue-700 font-semibold">{resume.email || 'No email'}</div>
                     <div className="text-blue-700 font-semibold">{resume.phone || 'No phone'}</div>
                     <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
-                      Score: {resume.Rank} ({getRankLabel(resume.Rank)})
+                      Score: {resume.Rank} {getRankLabel(resume.Rank)}
                     </div>
                     <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
                       Experience: {resume.experience} yrs

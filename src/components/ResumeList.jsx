@@ -8,13 +8,10 @@ const extractYearsOfExperience = (text = '') => {
   return match ? parseFloat(match[1]) : 0;
 };
 
-// Helper: Label for score
+// Helper function to convert score to label
 const getRankLabel = (score) => {
-  if (score >= 9) return '≥ 9';
-  if (score >= 8) return '≥ 8';
-  if (score >= 7) return '≥ 7';
-  return '≥ 6';
 };
+
 
 const ResumeList = () => {
   const [resumes, setResumes] = useState([]);
@@ -102,9 +99,6 @@ const ResumeList = () => {
   // Render thumb for sliders
   const renderThumb = ({ index, props }, range) => (
     <div {...props} className="h-5 w-5 rounded-full bg-blue-600 shadow-md cursor-pointer">
-      <div className="text-white text-xs mt-6 text-center w-10 -ml-2">
-        {range[index]}
-      </div>
     </div>
   );
 
@@ -118,7 +112,7 @@ const ResumeList = () => {
 
           <input
             type="text"
-            placeholder="Search name or email..."
+            placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="mb-6 px-4 py-3 rounded-lg border border-blue-300 focus:outline-none text-gray-700"
@@ -179,7 +173,7 @@ const ResumeList = () => {
           />
 
           {/* Email & Phone Filters */}
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 flex flex-row gap-x-6">
             <label className="inline-flex items-center gap-2 text-blue-900 font-semibold cursor-pointer">
               <input
                 type="checkbox"
@@ -214,19 +208,24 @@ const ResumeList = () => {
         <motion.div layout className="flex-1 space-y-6 overflow-auto max-h-[80vh]">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
-            <h3 className="text-2xl font-semibold text-black-900">Dashboard</h3>
 
         {/* Floating Org ID Display */}
       {orgId && (
-        <div className="fixed top-20 right-4 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
-          Req ID: {orgId}
+        <div className="fixed top-2 right-2 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+          Case ID: {orgId}
         </div>
       )}
           </div>
+          <div className="flex justify-between items-center mb-4">
           <p className="text-blue-800 font-medium mb-4">
             Showing <span className="font-bold">{filteredResumes.length}</span> of{' '}
             <span className="font-bold">{resumes.length}</span> resumes
           </p>
+
+            <p className="text-blue-800 font-medium">
+    <span className="font-bold"></span> Score Range 1 - 10
+  </p>
+</div>
 
           <ul className="space-y-4">
             {filteredResumes.length === 0 ? (
@@ -243,7 +242,7 @@ const ResumeList = () => {
                     <div className="text-blue-700 font-semibold">{resume.email || 'No email'}</div>
                     <div className="text-blue-700 font-semibold">{resume.phone || 'No phone'}</div>
                     <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
-                      Score: {resume.Rank} ({getRankLabel(resume.Rank)})
+                      Score: {resume.Rank} {getRankLabel(resume.Rank)}
                     </div>
                     <div className="mt-1 text-blue-900 font-semibold sm:mt-0">
                       Experience: {resume.experience} yrs

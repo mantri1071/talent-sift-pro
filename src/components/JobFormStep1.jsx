@@ -189,7 +189,7 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
                   onChange={() => setMode('new')}
                   disabled={isLoading}
                 />
-                <span>New</span>
+                <span>New Case</span>
               </label>
               <label className="inline-flex items-center space-x-2">
                 <input
@@ -200,7 +200,7 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
                   onChange={() => setMode('existing')}
                   disabled={isLoading}
                 />
-                <span>Existing</span>
+                <span>Existing Case</span>
               </label>
             </div>
 
