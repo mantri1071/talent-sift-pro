@@ -6,7 +6,7 @@ import logo from '../logo.png';
 
 const Footer = () => {
   return (
-    <footer className="w-full ml-1 mr-1 bg-sky-50/80 backdrop-blur-lg text-black mt-4 pt-16 pb-8">
+    <footer className="w-full bg-sky-50/80 backdrop-blur-lg text-black mt-4 pt-16 pb-8">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}

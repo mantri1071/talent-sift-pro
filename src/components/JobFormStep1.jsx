@@ -35,10 +35,10 @@ function JobDescriptionEditor({ value, onChange, minWords = 100, maxWords = 200,
   useEffect(() => {
     const wordCount = countWords(value);
     if (wordCount < minWords) {
-      setError(`Job description must be min ${minWords} words (currently ${wordCount})`);
+      setError(`Min ${minWords} words (currently ${wordCount})`);
       onValidChange && onValidChange(false);
     } else if (wordCount > maxWords) {
-      setError(`Job description must be no more than ${maxWords} words (currently ${wordCount})`);
+      setError(`Max${maxWords} words (currently ${wordCount})`);
       onValidChange && onValidChange(false);
     } else {
       setError('');
