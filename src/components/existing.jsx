@@ -3,11 +3,6 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Range } from 'react-range';
 
-const extractYearsOfExperience = (text = '') => {
-  const match = text.match(/([0-9]*\.?[0-9]+)\s*(\+)?\s*(years|yrs|year|yr)/i);
-  return match ? parseFloat(match[1]) : 0;
-};
-
 const getRankLabel = (score) => {
 };
 
@@ -69,7 +64,7 @@ const ResumeList = () => {
         name: item.name || `Candidate ${idx + 1}`,
         Rank: item.score || 0,
         justification: item.justification || "",
-        experience: extractYearsOfExperience(item.justification),
+        experience: item.experience || 0,
         email: item.email,
         phone: item.phone,
         keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
@@ -148,7 +143,7 @@ const ResumeList = () => {
   {error && <p className="mt-2 text-red-600 text-sm">{error}</p>}
 </form>
           {/* Search Input */}
-           <input
+<input
             type="text"
             placeholder="Search ..."
             value={searchQuery}

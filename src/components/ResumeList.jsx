@@ -2,13 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Range } from 'react-range';
 
-// Helper: Extract numeric experience from text
-const extractYearsOfExperience = (text = '') => {
-  const match = text.match(/([0-9]*\.?[0-9]+)\s*(\+)?\s*(years|yrs|year|yr)/i);
-  return match ? parseFloat(match[1]) : 0;
-};
-
-// Helper function to convert score to label
 const getRankLabel = (score) => {
 };
 
@@ -43,7 +36,6 @@ const ResumeList = () => {
 
       if (Array.isArray(parsedResumes) && parsedResumes.length > 0) {
         const mapped = parsedResumes.map((item, index) => {
-          const experience = extractYearsOfExperience(item.justification);
           const lowerJustification = (item.justification || "").toLowerCase();
 
           const matchedSkills = parsedSkills.filter(skill =>
@@ -55,7 +47,7 @@ const ResumeList = () => {
             name: item.name || `Candidate ${index + 1}`,
             Rank: item.score || 0,
             justification: item.justification || "",
-            experience,
+            experience: item.experience,
             email: item.email,
             phone: item.phone,
             keySkills: matchedSkills,
@@ -222,10 +214,10 @@ const ResumeList = () => {
             <span className="font-bold">{resumes.length}</span> resumes
           </p>
 
-            <p className="text-blue-800 font-medium">
-    <span className="font-bold"></span> Score Range 1 - 10
-  </p>
-</div>
+           <p className="text-blue-800 font-medium">
+           <span className="font-bold"></span> Score Range 1 - 10
+           </p>
+           </div>
 
           <ul className="space-y-4">
             {filteredResumes.length === 0 ? (
@@ -251,6 +243,13 @@ const ResumeList = () => {
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">
                     {resume.justification}
                   </div>
+
+                {resume.keySkills && resume.keySkills.length > 0 && (
+               <div className="text-sm text-blue-800 font-medium mt-1">
+               <span className="font-semibold text-blue-900">Skills:</span> {resume.keySkills.join(', ')}
+               </div>
+              )}
+
                 </motion.li>
               ))
             )}
