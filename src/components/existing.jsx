@@ -122,27 +122,33 @@ const ResumeList = () => {
         {/* Sidebar Filters */}
         <div className="w-full md:w-64 bg-blue-100 rounded-xl p-4 shadow-md flex-shrink-0">
           <h3 className="font-bold text-blue-900 mb-5 text-xl">🔍 Filter Options</h3>
-          <div className="mb-4">
-            <label className="font-semibold text-blue-800 block mb-2">Case ID </label>
-            <input
-              type="text"
-              placeholder="Enter Case ID"
-              value={orgId}
-              onChange={e => setOrgId(e.target.value)}
-              disabled={loading}
-              className="w-full px-4 py-2 border border-blue-300 rounded-md"
-            />
-            <button
-              onClick={fetchResumesByOrgId}
-              disabled={loading || !orgId.trim()}
-              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full disabled:opacity-50"
-            >
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-            {error && <p className="mt-2 text-red-600 text-sm">{error}</p>}
-          </div>
-
-          <input
+         <form
+  className="mb-4"
+  onSubmit={(e) => {
+    e.preventDefault();
+    fetchResumesByOrgId();
+  }}
+>
+  <label className="font-semibold text-blue-800 block mb-2">Case ID </label>
+  <input
+    type="text"
+    placeholder="Enter Case ID"
+    value={orgId}
+    onChange={e => setOrgId(e.target.value)}
+    disabled={loading}
+    className="w-full px-4 py-2 border border-blue-300 rounded-md"
+  />
+  <button
+    type="submit"
+    disabled={loading || !orgId.trim()}
+    className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full disabled:opacity-50"
+  >
+    {loading ? 'Searching...' : 'Search'}
+  </button>
+  {error && <p className="mt-2 text-red-600 text-sm">{error}</p>}
+</form>
+          {/* Search Input */}
+           <input
             type="text"
             placeholder="Search ..."
             value={searchQuery}

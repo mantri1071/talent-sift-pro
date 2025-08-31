@@ -203,7 +203,12 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
 
               {/* New Case Form */}
               {mode === 'new' && (
-                <>
+              <form
+                onSubmit={(e) => {
+                e.preventDefault();
+                onSubmit();
+         }}
+  >
                   {/* Job Title & Experience */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -312,14 +317,14 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
                 </div>
 
                 {/* Submit Button */}
-                <Button
-                  onClick={onSubmit}
-                  disabled={isLoading || !jobDescriptionIsValid}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 mt-4"
-                >
-                  {isLoading ? 'Processing...' : 'Submit'}
-                </Button>
-              </>
+              <Button
+               type="submit"
+               disabled={isLoading || !jobDescriptionIsValid}
+               className="bg-blue-600 hover:bg-blue-700 text-white px-8 mt-4"
+      >
+              {isLoading ? 'Processing...' : 'Submit'}
+              </Button>
+            </form>
             )}
           </motion.div>
         </motion.div>
