@@ -324,10 +324,11 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
           </motion.div>
         </motion.div>
       </div>
-    </main>
 
-    {/* ✅ FOOTER HERE */}
-    <Footer />
+    </main>
+    <div className="mt-8 ml-1 w-full">
+      <Footer />
+    </div>
   </div>
 );
 };

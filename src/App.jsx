@@ -109,7 +109,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-350 via-blue-500 to-blue-600 relative overflow-hidden">
       <Helmet>
-        <title>Talent Sift - Job Posting Platform</title>
+        <title>Talent Sift - Resume Screening Platform</title>
         <meta
           name="description"
           content="Create and post job opportunities with Talent Sift's intuitive job posting platform"
@@ -130,6 +130,7 @@ function App() {
 
       {/* App Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
+
         {/* Logo/Header */}
         <div className="p-8 flex items-center justify-start space-x-4">
           <img src={logo} alt="Talent Sift Logo" className="h-10" />
@@ -137,8 +138,11 @@ function App() {
             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
               <span className="text-blue font-bold">T</span>
             </div>
-            <span className="text-2xl font-serif font-bold text-gray-100">Talent</span>
-            <span className="text-2xl font-sans font-extrabold text-gray-800">Sift</span>
+            <span className="text-2xl font-serif font-bold text-gray-100">Talent Sift</span>
+          </div>
+
+          <div className=" absolute top-6 right-0 p-4 flex items-center justify-end space-x-2 ">
+          <span className="text-m font-serif text-gray-100">Beta Version</span>
           </div>
         </div>
 
