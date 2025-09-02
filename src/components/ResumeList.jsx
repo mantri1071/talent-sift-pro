@@ -204,14 +204,6 @@ const renderThumb = ({ props }) => (
         <motion.div layout className="flex-1 space-y-6 overflow-auto max-h-[80vh]">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
-
-
-            {/* Floating Org ID Display */}
-            {orgId && (
-              <div className="fixed top-2 right-2 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
-                Case ID: {orgId}
-              </div>
-            )}
           </div>
 
        {/* Back button */}

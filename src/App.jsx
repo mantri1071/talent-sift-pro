@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import JobFormStep1 from "@/components/JobFormStep1";
-import ResumeList from "@/components/existing"; // Your ResumeList component
+import ResumeList from "@/components/existing";
 import logo from "./logo.png";
 
 function App() {
@@ -19,9 +19,16 @@ function App() {
     resumeFiles: [],
   });
 
+  const [orgId, setOrgId] = useState(null); // ✅ Track case/org ID
   const [submittedExisting, setSubmittedExisting] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // ✅ Restore orgId on load if available
+  useEffect(() => {
+    const storedId = localStorage.getItem("caseId");
+    if (storedId) setOrgId(storedId);
+  }, []);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -30,85 +37,89 @@ function App() {
     }));
   };
 
-  // Main submit handler without org creation API call
-const handleNewSubmit = async (data) => {
-  if (!data.jobTitle || !data.jobType || !data.jobDescription) {
-    toast({
-      title: "Missing Information",
-      description: "Please fill in all required fields before submitting.",
-      variant: "destructive",
-    });
-    return;
-  }
-
-  if (!data.resumeFiles?.length) {
-    toast({
-      title: "Missing Resume",
-      description: "Please upload at least one resume before submitting.",
-      variant: "destructive",
-    });
-    return;
-  }
-
-  try {
-    const form = new FormData();
-
-    const stripHtml = (html) => {
-      const div = document.createElement("div");
-      div.innerHTML = html;
-      return div.textContent || "";
-    };
-
-    const jobPayload = {
-      org_id: 1, // Hardcoded for now
-      exe_name: data.jobTitle || "run 1", // Use Job Title from UI
-      workflow_id: "resume_ranker",
-      job_description: stripHtml(data.jobDescription),
-    };
-
-    console.log("Sending payload:", jobPayload);
-
-    form.append("data", JSON.stringify(jobPayload));
-
-    data.resumeFiles.forEach((file) => {
-      if (file instanceof File) {
-        form.append("resumes", file);
-      }
-    });
-
-    const response = await fetch("https://agentic-ai.co.in/api/agentic-ai/workflow-exe", {
-      method: "POST",
-      body: form,
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || `Upload failed with status ${response.status}`);
+  // ✅ New Submission
+  const handleNewSubmit = async (data) => {
+    if (!data.jobTitle || !data.jobType || !data.jobDescription) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields before submitting.",
+        variant: "destructive",
+      });
+      return;
     }
 
-    console.log("✅ Response data:", result.data);
+    if (!data.resumeFiles?.length) {
+      toast({
+        title: "Missing Resume",
+        description: "Please upload at least one resume before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    // Save results locally
-    localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
+    try {
+      const form = new FormData();
 
-    toast({
-      title: "Success!",
-      description: "✅ Resumes processed successfully.",
-    });
+      const stripHtml = (html) => {
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        return div.textContent || "";
+      };
 
-    navigate("/resumes");
-  } catch (error) {
-    console.error("❌ Upload failed:", error);
-    toast({
-      title: "Upload Failed",
-      description: error.message || "❌ Something went wrong.",
-      variant: "destructive",
-    });
-  }
-};
+      const jobPayload = {
+        org_id: 1, // ✅ Hardcoded for now
+        exe_name: data.jobTitle || "run 1", // ✅ Job Title used as exe_name
+        workflow_id: "resume_ranker",
+        job_description: stripHtml(data.jobDescription),
+      };
 
-  // Existing Flow → show ResumeList
+      console.log("Sending payload:", jobPayload);
+
+      form.append("data", JSON.stringify(jobPayload));
+
+      data.resumeFiles.forEach((file) => {
+        if (file instanceof File) {
+          form.append("resumes", file);
+        }
+      });
+
+      const response = await fetch("https://agentic-ai.co.in/api/agentic-ai/workflow-exe", {
+        method: "POST",
+        body: form,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || `Upload failed with status ${response.status}`);
+      }
+
+      console.log("✅ Response data:", result.data);
+
+      if (result.data?.id) {
+        setOrgId(result.data.id); // ✅ Store in state
+        localStorage.setItem("caseId", result.data.id); // ✅ Persist across sessions
+      }
+
+      localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
+
+      toast({
+        title: "Success!",
+        description: "✅ Resumes processed successfully.",
+      });
+
+      navigate("/resumes");
+    } catch (error) {
+      console.error("❌ Upload failed:", error);
+      toast({
+        title: "Upload Failed",
+        description: error.message || "❌ Something went wrong.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // ✅ Existing Flow
   const handleExistingSubmit = () => {
     setSubmittedExisting(true);
   };
@@ -140,14 +151,13 @@ const handleNewSubmit = async (data) => {
         {/* Logo/Header */}
         <div className="p-8 flex items-center justify-start space-x-4">
           <img src={logo} alt="Talent Sift Logo" className="h-10" />
-          <div className=" absolute top-0 right-0 p-4 flex items-center justify-end space-x-2 ">
+          <div className="absolute top-0 right-0 p-4 flex items-center justify-end space-x-2">
             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
               <span className="text-blue font-bold">T</span>
             </div>
             <span className="text-2xl font-serif font-bold text-gray-100">Talent Sift</span>
           </div>
-
-          <div className=" absolute top-6 right-0 p-4 flex items-center justify-end space-x-2 ">
+          <div className="absolute top-6 right-0 p-4 flex items-center justify-end space-x-2">
             <span className="text-m font-serif text-gray-100">Beta Version</span>
           </div>
         </div>
@@ -165,6 +175,13 @@ const handleNewSubmit = async (data) => {
             <ResumeList />
           )}
         </div>
+
+        {/* ✅ Floating Case ID Display */}
+        {orgId && (
+          <div className="fixed top-2 right-2 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+            Case ID: {orgId}
+          </div>
+        )}
 
         {/* Global Toaster */}
         <Toaster />
