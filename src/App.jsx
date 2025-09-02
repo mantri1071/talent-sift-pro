@@ -176,13 +176,6 @@ function App() {
           )}
         </div>
 
-        {/* ✅ Floating Case ID Display */}
-        {orgId && (
-          <div className="fixed top-2 right-2 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
-            Case ID: {orgId}
-          </div>
-        )}
-
         {/* Global Toaster */}
         <Toaster />
       </div>
