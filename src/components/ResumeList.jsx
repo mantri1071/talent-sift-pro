@@ -202,11 +202,11 @@ const ResumeList = () => {
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
 
                     {/* ✅ Floating Case ID Display */}
-        {orgId && (
+        {/* {orgId && (
           <div className="fixed top-2 right-2 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
             Case ID: {orgId}
           </div>
-        )}
+        )} */}
 
           </div>
 

@@ -106,7 +106,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
   setError('');
 
   try {
-    const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=${orgId.trim()}&workflow_id=resume_ranker`;
+    const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=2&workflow_id=resume_ranker`;
     const response = await fetch(url);
     const data = await response.json();
 
