@@ -31,74 +31,80 @@ function App() {
   };
 
   // ✅ New Job Flow
-  const handleNewSubmit = async (data) => {
-    if (!data.jobTitle || !data.jobType || !data.jobDescription) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields before submitting.",
-        variant: "destructive"
-      });
-      return;
+const handleNewSubmit = async (data) => {
+  if (!data.jobTitle || !data.jobType || !data.jobDescription) {
+    toast({
+      title: "Missing Information",
+      description: "Please fill in all required fields before submitting.",
+      variant: "destructive"
+    });
+    return;
+  }
+  if (!data.resumeFiles?.length) {
+    toast({
+      title: "Missing Resume",
+      description: "Please upload at least one resume before submitting.",
+      variant: "destructive"
+    });
+    return;
+  }
+
+  try {
+    const form = new FormData();
+    const orgIdFromStorage = Number(localStorage.getItem("orgId"));
+
+    const stripHtml = (html) => {
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      return div.textContent || "";
+    };
+
+    // Conditionally include org_id only if it exists and is valid
+    const jobPayload = {
+      ...(orgIdFromStorage ? { org_id: orgIdFromStorage } : {}),
+      exe_name: data.requiredSkills,
+      workflow_id: "resume_ranker",
+      job_description: stripHtml(data.jobDescription) || "No description",
+    };
+
+    console.log("Payload being sent:", jobPayload);
+
+    form.append("data", JSON.stringify(jobPayload));
+    data.resumeFiles.forEach(file => {
+      if (file instanceof File) form.append("resumes", file);
+    });
+
+    const response = await fetch(
+      "https://agentic-ai.co.in/api/agentic-ai/workflow-exe",
+      { method: "POST", body: form }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `Upload failed with status ${response.status}`);
     }
-    if (!data.resumeFiles?.length) {
-      toast({
-        title: "Missing Resume",
-        description: "Please upload at least one resume before submitting.",
-        variant: "destructive"
-      });
-      return;
+
+    console.log("✅ Response data:", result.data);
+
+    // Save new orgId if returned by API
+    if (result.data?.id && !orgIdFromStorage) {
+      localStorage.setItem("orgId", result.data.id);
     }
 
-    try {
-      const form = new FormData();
-      const orgIdFromStorage = Number(localStorage.getItem("orgId"));
+    localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
 
-      const stripHtml = (html) => {
-        const div = document.createElement("div");
-        div.innerHTML = html;
-        return div.textContent || "";
-      };
-
-      const jobPayload = {
-        org_id: orgIdFromStorage,
-        exe_name: data.requiredSkills,
-        workflow_id: "resume_ranker",
-        job_description: stripHtml(data.jobDescription) || "No description",
-      };
-
-      form.append("data", JSON.stringify(jobPayload));
-      data.resumeFiles.forEach(file => {
-        if (file instanceof File) form.append("resumes", file);
-      });
-
-      const response = await fetch(
-        "https://agentic-ai.co.in/api/agentic-ai/workflow-exe",
-        { method: "POST", body: form }
-      );
-
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message || `Upload failed with status ${response.status}`);
-      }
-
-      console.log("✅ Response data:", result.data);
-
-      if (result.data?.id) {
-        localStorage.setItem("orgId", result.data.id);
-      }
-      localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
-
-      toast({ title: "Success!", description: "✅ Resumes processed successfully." });
-      navigate("/resumes");
-    } catch (error) {
-      console.error("❌ Upload failed:", error);
-      toast({
-        title: "Upload Failed",
-        description: error.message || "❌ Something went wrong.",
-        variant: "destructive",
-      });
-    }
-  };
+    toast({ title: "Success!", description: "✅ Resumes processed successfully." });
+    navigate("/resumes");
+  } catch (error) {
+    console.error("❌ Upload failed:", error);
+    toast({
+      title: "Upload Failed",
+      description: error.message || "❌ Something went wrong.",
+      variant: "destructive",
+    });
+  }
+};
 
   // ✅ Existing Flow → directly show ResumeList
   const handleExistingSubmit = () => {
