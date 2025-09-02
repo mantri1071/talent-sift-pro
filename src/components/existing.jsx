@@ -41,58 +41,53 @@ const ResumeList = () => {
   }, [orgId, executionId, searched]);
 
 // // Fetch by org_id (Case ID)
-// const fetchResumesByOrgId = useCallback(async () => {
-//   if (!orgId.trim()) {
-//     setError('Please enter Case ID.');
-//     setSearchedResumes([]);
-//     return;
-//   }
+const fetchResumesByOrgId = useCallback(async () => {
 
-//   setSearched(true);
-//   setLoading(true);
-//   setError('');
+  setSearched(true);
+  setLoading(true);
+  setError('');
 
-//   try {
-//     const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=2&workflow_id=resume_ranker`;
-//     const response = await fetch(url);
-//     const data = await response.json();
+  try {
+    const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=2&workflow_id=resume_ranker`;
+    const response = await fetch(url);
+    const data = await response.json();
 
-//     const resumesData = Array.isArray(data.data)
-//       ? data.data.flatMap(item => Array.isArray(item.result) ? item.result.map(res => ({
-//           ...res,
-//           exeSkill: item.exe_name // Keep track of skill from exe_name
-//         })) : [])
-//       : [];
+    const resumesData = Array.isArray(data.data)
+      ? data.data.flatMap(item => Array.isArray(item.result) ? item.result.map(res => ({
+          ...res,
+          exeSkill: item.exe_name // Keep track of skill from exe_name
+        })) : [])
+      : [];
 
-//     const exeSkill = data.data[0]?.exe_name || '';
+    const exeSkill = data.data[0]?.exe_name || '';
 
-//     if (!resumesData.length) {
-//       setError('No resumes found for this Case ID.');
-//       setSearchedResumes([]);
-//       return;
-//     }
+    if (!resumesData.length) {
+      setError('No resumes found for this Case ID.');
+      setSearchedResumes([]);
+      return;
+    }
 
-//     const mappedResumes = resumesData.map((item, idx) => ({
-//       id: idx,
-//       name: item.name || `Candidate ${idx + 1}`,
-//       Rank: item.score || 0,
-//       justification: item.justification || '',
-//       experience: typeof item.experience === 'number' ? item.experience : 0,
-//       email: item.email === 'xxx' ? 'No email' : item.email || 'No email',
-//       phone: item.phone === 'xxx' ? 'No phone' : item.phone || 'No phone',
-//       keySkills: Array.isArray(item.keySkills) ? item.keySkills : [item.exeSkill || '']
-//     }));
+    const mappedResumes = resumesData.map((item, idx) => ({
+      id: idx,
+      name: item.name || `Candidate ${idx + 1}`,
+      Rank: item.score || 0,
+      justification: item.justification || '',
+      experience: typeof item.experience === 'number' ? item.experience : 0,
+      email: item.email === 'xxx' ? 'No email' : item.email || 'No email',
+      phone: item.phone === 'xxx' ? 'No phone' : item.phone || 'No phone',
+      keySkills: Array.isArray(item.keySkills) ? item.keySkills : [item.exeSkill || '']
+    }));
 
-//     setSearchedResumes(mappedResumes);
-//     localStorage.setItem(`resumeResults_org_${orgId.trim()}`, JSON.stringify(mappedResumes));
-//   } catch (err) {
-//     console.error(err);
-//     setError('Error retrieving resumes.');
-//     setSearchedResumes([]);
-//   } finally {
-//     setLoading(false);
-//   }
-// }, [orgId]);
+    setSearchedResumes(mappedResumes);
+    localStorage.setItem(`resumeResults_org_${orgId.trim()}`, JSON.stringify(mappedResumes));
+  } catch (err) {
+    console.error(err);
+    setError('Error retrieving resumes.');
+    setSearchedResumes([]);
+  } finally {
+    setLoading(false);
+  }
+}, [orgId]);
 
 const fetchResumesByExecutionId = useCallback(async () => {
   if (!executionId.trim() || !orgId.trim()) {
