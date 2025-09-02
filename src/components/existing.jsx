@@ -10,22 +10,26 @@ const ResumeList = () => {
   const [uploadedResumes, setUploadedResumes] = useState([]);
   const [searchedResumes, setSearchedResumes] = useState([]);
   const [orgId, setOrgId] = useState('');
+  const [executionId, setExecutionId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [keySkillQuery, setKeySkillQuery] = useState('');
   const [scoreRange, setScoreRange] = useState([1, 10]);
-  const [experienceRange, setExperienceRange] = useState([0, 10]);
+  const [experienceRange, setExperienceRange] = useState([0, 50]); // Adjusted max to 50
   const [filterEmail, setFilterEmail] = useState(false);
   const [filterPhone, setFilterPhone] = useState(false);
-  const [userKeySkills, setUserKeySkills] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [searched, setSearched] = useState(false); // ✅ used to control localStorage loading
+  const [searched, setSearched] = useState(false);
 
-  // Load from localStorage only after a search
+  // Load from localStorage after a search
   useEffect(() => {
-    if (!searched || !orgId.trim()) return;
+    if (!searched) return;
 
-    const stored = localStorage.getItem(`resumeResults_${orgId.trim()}`);
+    const orgKey = orgId.trim();
+    const execKey = executionId.trim();
+    const key = orgKey ? `resumeResults_org_${orgKey}` : `resumeResults_id_${execKey}`;
+
+    const stored = localStorage.getItem(key);
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
@@ -34,8 +38,9 @@ const ResumeList = () => {
         console.error('Failed to parse local resume data', e);
       }
     }
-  }, [orgId, searched]);
+  }, [orgId, executionId, searched]);
 
+  // Fetch by org_id (Case ID)
   const fetchResumesByOrgId = useCallback(async () => {
     if (!orgId.trim()) {
       setError('Please enter Case ID.');
@@ -43,43 +48,60 @@ const ResumeList = () => {
       return;
     }
 
-    setSearched(true); // ✅ Trigger useEffect to check localStorage
+    setSearched(true);
     setLoading(true);
     setError('');
 
     try {
-      const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=${orgId.trim()}&workflow_id=resume_ranker`;
+      const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=1&workflow_id=resume_ranker`;
       const response = await fetch(url);
       const data = await response.json();
 
-      const resumesData =
-        Array.isArray(data.data) &&
-        data.data.length > 0 &&
-        Array.isArray(data.data[0].result)
-          ? data.data[0].result
-          : [];
+      // const resumesData = Array.isArray(data.data) && Array.isArray(data.data[0]?.result)
+      //   ? data.data[0].result
+      //   : [];
+
+      const resumesData = Array.isArray(data.data)
+  ? data.data.flatMap(item => Array.isArray(item.result) ? item.result.map(res => ({
+      ...res,
+      exeSkill: item.exe_name // Keep track of skill from exe_name
+    })) : [])
+  : [];
+
 
       const exeSkill = data.data[0]?.exe_name || '';
 
-      if (!Array.isArray(resumesData) || resumesData.length === 0) {
+      if (!resumesData.length) {
         setError('No resumes found for this Case ID.');
         setSearchedResumes([]);
         return;
       }
 
+      // const mappedResumes = resumesData.map((item, idx) => ({
+      //   id: idx,
+      //   name: item.name || `Candidate ${idx + 1}`,
+      //   Rank: item.score || 0,
+      //   justification: item.justification || '',
+      //   experience: typeof item.experience === 'number' ? item.experience : 0,
+      //   email: item.email === 'xxx' ? 'No email' : item.email,
+      //   phone: item.phone === 'xxx' ? 'No phone' : item.phone,
+      //   keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
+      // }));
+
       const mappedResumes = resumesData.map((item, idx) => ({
-        id: idx,
-        name: item.name || `Candidate ${idx + 1}`,
-        Rank: item.score || 0,
-        justification: item.justification || '',
-        experience: typeof item.experience === 'number' ? item.experience : 0,
-        email: item.email === 'xxx' ? 'No email' : item.email,
-        phone: item.phone === 'xxx' ? 'No phone' : item.phone,
-        keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
-      }));
+  id: idx,
+  name: item.name || `Candidate ${idx + 1}`,
+  Rank: item.score || 0,
+  justification: item.justification || '',
+  experience: typeof item.experience === 'number' ? item.experience : 0,
+  email: item.email === 'xxx' ? 'No email' : item.email || 'No email',
+  phone: item.phone === 'xxx' ? 'No phone' : item.phone || 'No phone',
+  keySkills: Array.isArray(item.keySkills) ? item.keySkills : [item.exeSkill || '']
+}));
+
 
       setSearchedResumes(mappedResumes);
-      localStorage.setItem(`resumeResults_${orgId.trim()}`, JSON.stringify(mappedResumes));
+      localStorage.setItem(`resumeResults_org_${orgId.trim()}`, JSON.stringify(mappedResumes));
     } catch (err) {
       console.error(err);
       setError('Error retrieving resumes.');
@@ -88,6 +110,130 @@ const ResumeList = () => {
       setLoading(false);
     }
   }, [orgId]);
+
+  // Fetch by execution ID (without extra query params)
+  // const fetchResumesByExecutionId = useCallback(async () => {
+  // if (!executionId.trim()) {
+  //   setError('Please enter Execution ID.');
+  //   setSearchedResumes([]);
+  //   return;
+  // }
+// 
+// const fetchResumesByExecutionId = useCallback(async () => {
+//   if (!executionId.trim() || !orgId.trim()) {
+//     setError('Please enter both Case ID and Execution ID.');
+//     setSearchedResumes([]);
+//     return;
+//   }
+
+//   setSearched(true);
+//   setLoading(true);
+//   setError('');
+
+//   try {
+//     const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=${orgId.trim()}&workflow_id=resume_ranker&id=${executionId.trim()}`;
+//     const response = await fetch(url);
+//     const data = await response.json();
+
+//     // ⛏️ Fix: Get the first object from the keyed response (like { "0": {...} })
+//     const firstKey = Object.keys(data)[0];
+//     const executionData = data[firstKey];
+
+//     if (!executionData || !executionData.result) {
+//       setError('Invalid response from server.');
+//       setSearchedResumes([]);
+//       return;
+//     }
+
+//     const resumesData = Array.isArray(executionData.result) ? executionData.result : [];
+//     const exeSkill = executionData.exe_name || '';
+
+//     if (!resumesData.length) {
+//       setError('No resumes found for this Execution ID.');
+//       setSearchedResumes([]);
+//       return;
+//     }
+
+//     const mappedResumes = resumesData.map((item, idx) => ({
+//       id: idx,
+//       name: item.name || `Candidate ${idx + 1}`,
+//       Rank: item.score || 0,
+//       justification: item.justification || '',
+//       experience: typeof item.experience === 'number' ? item.experience : 0,
+//       email: item.email === 'xxx' ? 'No email' : item.email || 'No email',
+//       phone: item.phone === 'xxx' ? 'No phone' : item.phone || 'No phone',
+//       keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
+//     }));
+
+//     setSearchedResumes(mappedResumes);
+//     localStorage.setItem(`resumeResults_id_${executionId.trim()}`, JSON.stringify(mappedResumes));
+//   } catch (err) {
+//     console.error(err);
+//     setError('Error retrieving resumes.');
+//     setSearchedResumes([]);
+//   } finally {
+//     setLoading(false);
+//   }
+// }, [executionId, orgId]);
+const fetchResumesByExecutionId = useCallback(async () => {
+  if (!executionId.trim() || !orgId.trim()) {
+    setError('Please enter both Case ID and Execution ID.');
+    setSearchedResumes([]);
+    return;
+  }
+
+  setSearched(true);
+  setLoading(true);
+  setError('');
+
+  try {
+    const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=${orgId.trim()}&workflow_id=resume_ranker`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    // ✅ Filter the execution with the matching ID
+    const matchedExecution = Array.isArray(data.data)
+      ? data.data.find(item => item.id.toString() === executionId.trim())
+      : null;
+
+    if (!matchedExecution || !matchedExecution.result) {
+      setError('Invalid response from server.');
+      setSearchedResumes([]);
+      return;
+    }
+
+    const resumesData = Array.isArray(matchedExecution.result) ? matchedExecution.result : [];
+    const exeSkill = matchedExecution.exe_name || '';
+
+    if (!resumesData.length) {
+      setError('No resumes found for this Execution ID.');
+      setSearchedResumes([]);
+      return;
+    }
+
+    const mappedResumes = resumesData.map((item, idx) => ({
+      id: idx,
+      name: item.name || `Candidate ${idx + 1}`,
+      Rank: item.score || 0,
+      justification: item.justification || '',
+      experience: typeof item.experience === 'number' ? item.experience : 0,
+      email: item.email === 'xxx' ? 'No email' : item.email || 'No email',
+      phone: item.phone === 'xxx' ? 'No phone' : item.phone || 'No phone',
+      keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
+    }));
+
+    setSearchedResumes(mappedResumes);
+    localStorage.setItem(`resumeResults_id_${executionId.trim()}`, JSON.stringify(mappedResumes));
+  } catch (err) {
+    console.error(err);
+    setError('Error retrieving resumes.');
+    setSearchedResumes([]);
+  } finally {
+    setLoading(false);
+  }
+}, [executionId, orgId]);
+
+
 
   const combinedResumes = useMemo(() => [...uploadedResumes, ...searchedResumes], [
     uploadedResumes,
@@ -113,8 +259,8 @@ const ResumeList = () => {
       const inScoreRange = rank >= scoreRange[0] && rank <= scoreRange[1];
       const inExpRange = r.experience >= experienceRange[0] && r.experience <= experienceRange[1];
 
-    const hasEmail = filterEmail ? (r.email && r.email !== 'No email') : true;
-    const hasPhone = filterPhone ? (r.phone && r.phone !== 'No phone') : true;
+      const hasEmail = filterEmail ? (r.email && r.email !== 'No email') : true;
+      const hasPhone = filterPhone ? (r.phone && r.phone !== 'No phone') : true;
 
       return matchesSearch && matchesSkill && inScoreRange && inExpRange && hasEmail && hasPhone;
     });
@@ -131,7 +277,7 @@ const ResumeList = () => {
         <div className="w-full md:w-64 bg-blue-100 rounded-xl p-4 shadow-md flex-shrink-0">
           <h3 className="font-bold text-blue-900 mb-5 text-xl">🔍 Filter Options</h3>
 
-          {/* ✅ Only ONE form */}
+          {/* Search by Case ID (org_id) */}
           <form
             className="mb-4"
             onSubmit={(e) => {
@@ -154,6 +300,32 @@ const ResumeList = () => {
               className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full disabled:opacity-50"
             >
               {loading ? 'Searching...' : 'Search'}
+            </button>
+          </form>
+
+          {/* Search by Execution ID (id) */}
+          <form
+            className="mb-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              fetchResumesByExecutionId();
+            }}
+          >
+            <label className="font-semibold text-blue-800 block mb-2">Execution ID</label>
+            <input
+              type="text"
+              placeholder="Enter Execution ID"
+              value={executionId}
+              onChange={(e) => setExecutionId(e.target.value)}
+              disabled={loading}
+              className="w-full px-4 py-2 border border-green-300 rounded-md"
+            />
+            <button
+              type="submit"
+              disabled={loading || !executionId.trim()}
+              className="mt-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full disabled:opacity-50"
+            >
+              {loading ? 'Searching...' : 'Search by ID'}
             </button>
             {error && <p className="mt-2 text-red-600 text-sm">{error}</p>}
           </form>
@@ -203,7 +375,7 @@ const ResumeList = () => {
           <Range
             step={1}
             min={0}
-            max={10}
+            max={50} // max experience set to 50 years
             values={experienceRange}
             onChange={setExperienceRange}
             renderTrack={({ props, children }) => (
@@ -211,9 +383,9 @@ const ResumeList = () => {
                 <div
                   style={{
                     height: '6px',
-                    width: `${((experienceRange[1] - experienceRange[0]) / 10) * 100}%`,
+                    width: `${((experienceRange[1] - experienceRange[0]) / 50) * 100}%`,
                     backgroundColor: '#2563eb',
-                    marginLeft: `${(experienceRange[0] / 10) * 100}%`,
+                    marginLeft: `${(experienceRange[0] / 50) * 100}%`,
                   }}
                 />
                 {children}
@@ -252,38 +424,49 @@ const ResumeList = () => {
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
           </div>
           <div className="flex justify-between items-center mb-4">
-            <p className="text-blue-800 font-medium">
-              Showing <span className="font-bold">{filteredResumes.length}</span> of{' '}
-              <span className="font-bold">{combinedResumes.length}</span> resumes
+                        <p className="text-blue-800 font-medium">
+              Showing {filteredResumes.length} result{filteredResumes.length !== 1 ? 's' : ''}
             </p>
-            <p className="text-blue-800 font-medium">Score Range 1 - 10</p>
           </div>
-          <ul className="space-y-4">
-            {filteredResumes.length === 0 ? (
-              <li className="text-blue-900 italic font-medium">No resumes found.</li>
-            ) : (
-              filteredResumes.map((resume) => (
-                <motion.li
-                  layout
-                  key={resume.id}
-                  className="bg-white rounded-2xl shadow-md p-5 flex flex-col gap-3 border border-blue-200 hover:shadow-xl transition-all duration-200"
-                >
-                  <div className="text-gray-900 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 w-full">
-                    <div className="font-bold text-xl col-span-full sm:col-span-1">{resume.name}</div>
-                    <div className="text-blue-700 font-semibold">{resume.email || 'No email'}</div>
-                    <div className="text-blue-700 font-semibold">{resume.phone || 'No phone'}</div>
-                    <div className="text-blue-900 font-semibold">
-                      Score: {resume.Rank} {getRankLabel(resume.Rank)}
-                    </div>
-                    <div className="text-blue-900 font-semibold">
-                      Experience: {resume.experience ? `${resume.experience} yrs` : 'null'}
-                    </div>
-                  </div>
-                  <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">{resume.justification}</div>
-                </motion.li>
-              ))
-            )}
-          </ul>
+
+          {loading && (
+            <p className="text-blue-900 font-semibold text-center">Loading resumes...</p>
+          )}
+
+          {!loading && filteredResumes.length === 0 && (
+            <p className="text-red-600 font-semibold text-center">No resumes match the filters.</p>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredResumes.map((resume) => (
+              <motion.div
+                key={resume.id}
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white rounded-xl shadow-lg p-5 flex flex-col"
+              >
+                <h3 className="text-xl font-semibold text-blue-900 mb-2">{resume.name}</h3>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Rank Score:</strong> {resume.Rank}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Experience:</strong> {resume.experience} years
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Email:</strong> {resume.email}
+                </p>
+                <p className="text-sm text-gray-600 mb-3">
+                  <strong>Phone:</strong> {resume.phone}
+                </p>
+                {resume.justification && (
+                  <p className="text-sm text-gray-700 italic mb-3">"{resume.justification}"</p>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </div>
@@ -291,3 +474,4 @@ const ResumeList = () => {
 };
 
 export default ResumeList;
+

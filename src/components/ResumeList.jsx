@@ -149,7 +149,7 @@ const renderThumb = ({ props }) => (
           <Range
             step={1}
             min={0}
-            max={10}
+            max={50}
             values={experienceRange}
             onChange={setExperienceRange}
             renderTrack={({ props, children }) => (
@@ -158,8 +158,8 @@ const renderThumb = ({ props }) => (
                   style={{
                     height: '6px',
                     backgroundColor: '#2563eb',
-                    marginLeft: `${(experienceRange[0] / 10) * 100}%`,
-                    width: `${((experienceRange[1] - experienceRange[0]) / 10) * 100}%`,
+                    marginLeft: `${(experienceRange[0] / 50) * 100}%`,
+                    width: `${((experienceRange[1] - experienceRange[0]) / 50) * 100}%`,
                   }}
                 />
                 {children}
@@ -259,12 +259,6 @@ const renderThumb = ({ props }) => (
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">
                     {resume.justification}
                   </div>
-
-                  {resume.keySkills && resume.keySkills.length > 0 && (
-                    <div className="text-sm text-blue-800 font-medium mt-1">
-                      <span className="font-semibold text-blue-900">Skills:</span> {resume.keySkills.join(', ')}
-                    </div>
-                  )}
 
                 </motion.li>
               ))
