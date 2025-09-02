@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
 import JobFormStep1 from '@/components/JobFormStep1';
-import ResumeList from '@/components/existing'; // <-- This is the ResumeList you pasted
+import ResumeList from '@/components/existing'; // Your ResumeList component
 import logo from './logo.png';
 
 function App() {
@@ -30,85 +30,103 @@ function App() {
     }));
   };
 
-  // ✅ New Job Flow
-const handleNewSubmit = async (data) => {
-  if (!data.jobTitle || !data.jobType || !data.jobDescription) {
-    toast({
-      title: "Missing Information",
-      description: "Please fill in all required fields before submitting.",
-      variant: "destructive"
+  // Helper function to get or create Org ID
+  async function getOrCreateOrgId() {
+    const storedOrgId = Number(localStorage.getItem("orgId"));
+    if (storedOrgId) return storedOrgId;
+
+    // TODO: Replace URL and payload with your backend's actual org creation API
+    const response = await fetch("https://agentic-ai.co.in/api/agentic-ai/create-org", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        // Include any required data to create org here if needed
+      }),
     });
-    return;
-  }
-  if (!data.resumeFiles?.length) {
-    toast({
-      title: "Missing Resume",
-      description: "Please upload at least one resume before submitting.",
-      variant: "destructive"
-    });
-    return;
-  }
-
-  try {
-    const form = new FormData();
-    const orgIdFromStorage = Number(localStorage.getItem("orgId"));
-
-    const stripHtml = (html) => {
-      const div = document.createElement("div");
-      div.innerHTML = html;
-      return div.textContent || "";
-    };
-
-    // Conditionally include org_id only if it exists and is valid
-    const jobPayload = {
-      ...(orgIdFromStorage ? { org_id: orgIdFromStorage } : {}),
-      exe_name: data.requiredSkills,
-      workflow_id: "resume_ranker",
-      job_description: stripHtml(data.jobDescription) || "No description",
-    };
-
-    console.log("Payload being sent:", jobPayload);
-
-    form.append("data", JSON.stringify(jobPayload));
-    data.resumeFiles.forEach(file => {
-      if (file instanceof File) form.append("resumes", file);
-    });
-
-    const response = await fetch(
-      "https://agentic-ai.co.in/api/agentic-ai/workflow-exe",
-      { method: "POST", body: form }
-    );
 
     const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(result.message || `Upload failed with status ${response.status}`);
+    if (!response.ok || !result.data?.id) {
+      throw new Error(result.message || "Failed to create Org ID");
     }
 
-    console.log("✅ Response data:", result.data);
-
-    // Save new orgId if returned by API
-    if (result.data?.id && !orgIdFromStorage) {
-      localStorage.setItem("orgId", result.data.id);
-    }
-
-    localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
-
-    toast({ title: "Success!", description: "✅ Resumes processed successfully." });
-    navigate("/resumes");
-  } catch (error) {
-    console.error("❌ Upload failed:", error);
-    toast({
-      title: "Upload Failed",
-      description: error.message || "❌ Something went wrong.",
-      variant: "destructive",
-    });
+    localStorage.setItem("orgId", result.data.id);
+    return result.data.id;
   }
-};
 
-  // ✅ Existing Flow → directly show ResumeList
+  // New Job Flow with Org ID ensured
+  const handleNewSubmit = async (data) => {
+    if (!data.jobTitle || !data.jobType || !data.jobDescription) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (!data.resumeFiles?.length) {
+      toast({
+        title: "Missing Resume",
+        description: "Please upload at least one resume before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Ensure Org ID is available before submitting
+      const orgId = await getOrCreateOrgId();
+
+      const form = new FormData();
+
+      const stripHtml = (html) => {
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        return div.textContent || "";
+      };
+
+      const jobPayload = {
+        org_id: orgId,
+        exe_name: data.requiredSkills,
+        workflow_id: "resume_ranker",
+        job_description: stripHtml(data.jobDescription) || "No description",
+      };
+
+      form.append("data", JSON.stringify(jobPayload));
+      data.resumeFiles.forEach(file => {
+        if (file instanceof File) form.append("resumes", file);
+      });
+
+      const response = await fetch(
+        "https://agentic-ai.co.in/api/agentic-ai/workflow-exe",
+        { method: "POST", body: form }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || `Upload failed with status ${response.status}`);
+      }
+
+      localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
+
+      toast({ title: "Success!", description: "✅ Resumes processed successfully." });
+      navigate("/resumes");
+    } catch (error) {
+      console.error("❌ Upload failed:", error);
+      toast({
+        title: "Upload Failed",
+        description: error.message || "❌ Something went wrong.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Existing Flow → show ResumeList
   const handleExistingSubmit = () => {
-      console.log("handleExistingSubmit called");
+    console.log("handleExistingSubmit called");
     setSubmittedExisting(true);
   };
 
@@ -148,7 +166,7 @@ const handleNewSubmit = async (data) => {
           </div>
 
           <div className=" absolute top-6 right-0 p-4 flex items-center justify-end space-x-2 ">
-          <span className="text-m font-serif text-gray-100">Beta Version</span>
+            <span className="text-m font-serif text-gray-100">Beta Version</span>
           </div>
         </div>
 

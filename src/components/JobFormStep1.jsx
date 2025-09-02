@@ -281,7 +281,7 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
       Key Skills <span className="text-red-500">*</span>
     </Label>
     <Input
-      placeholder=" separate skill with , e.g. JAVA, REACT"
+      placeholder=" separate skill with comma"
       value={formData.requiredSkills}
       onChange={(e) => handleInputChange('requiredSkills', e.target.value)}
       className="bg-white/70"

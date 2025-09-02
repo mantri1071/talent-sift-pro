@@ -278,12 +278,6 @@ const ResumeList = () => {
                     <div className="text-blue-900 font-semibold">
                       Experience: {resume.experience ? `${resume.experience} yrs` : 'null'}
                     </div>
-                    {resume.keySkills && resume.keySkills.length > 0 && (
-                      <div className="text-sm text-blue-800 font-medium mt-1 col-span-full">
-                        <span className="font-semibold text-blue-900">🛠️ Key Skills:</span>{' '}
-                        {resume.keySkills.join(', ')}
-                      </div>
-                    )}
                   </div>
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">{resume.justification}</div>
                 </motion.li>
