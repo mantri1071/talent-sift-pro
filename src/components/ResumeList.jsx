@@ -89,12 +89,9 @@ const ResumeList = () => {
   });
 }, [searchQuery, scoreRange, experienceRange, filterEmail, filterPhone, resumes]);
 
-const renderThumb = ({ props }) => (
-  <div
-    {...props}
-    className="h-5 w-5 rounded-full bg-blue-600 shadow-md cursor-pointer"
-  />
-);
+  const renderThumb = ({ index, props }) => (
+    <div {...props} key={index} className="h-5 w-5 rounded-full bg-blue-600 shadow-md cursor-pointer" />
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-cyan-400 to-blue-500 p-4 sm:p-6 flex justify-center items-start">
@@ -140,32 +137,31 @@ const renderThumb = ({ props }) => (
             renderThumb={(props) => renderThumb(props, scoreRange)}
           />
 
-          {/* Experience Range */}
           <label className="font-semibold text-blue-800 mt-6 mb-3 block text-lg">Experience (years)</label>
           <div className="flex justify-between mb-3 text-blue-900 font-semibold text-sm">
-            <span>{experienceRange[0]}</span><span>{experienceRange[1]}</span>
+            <span>{experienceRange[0]}</span>
+            <span>{experienceRange[1]}</span>
           </div>
-
           <Range
             step={1}
             min={0}
-            max={50}
+            max={35} // max experience set to 50 years
             values={experienceRange}
             onChange={setExperienceRange}
             renderTrack={({ props, children }) => (
-              <div {...props} style={{ ...props.style, height: '6px', backgroundColor: '#ddd' }}>
+              <div {...props} style={{ ...props.style, height: '6px', background: '#ddd' }}>
                 <div
                   style={{
                     height: '6px',
+                    width: `${((experienceRange[1] - experienceRange[0]) / 35) * 100}%`,
                     backgroundColor: '#2563eb',
-                    marginLeft: `${(experienceRange[0] / 50) * 100}%`,
-                    width: `${((experienceRange[1] - experienceRange[0]) / 50) * 100}%`,
+                    marginLeft: `${(experienceRange[0] / 35) * 100}%`,
                   }}
                 />
                 {children}
               </div>
             )}
-            renderThumb={(props) => renderThumb(props, experienceRange)}
+            renderThumb={(props) => renderThumb(props, scoreRange)}
           />
 
           {/* Email & Phone Filters */}
@@ -250,10 +246,10 @@ const renderThumb = ({ props }) => (
                 >
                   <div className="text-gray-900 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 w-full">
                     <div className="font-bold text-xl col-span-full sm:col-span-1">{resume.name}</div>
-                    <div className="text-blue-700 font-semibold">{resume.email || 'No email'}</div>
-                    <div className="text-blue-700 font-semibold">{resume.phone || 'No phone'}</div>
                     <div className="text-blue-900 font-semibold">Score: {resume.Rank} {getRankLabel(resume.Rank)}</div>
                     <div className="text-blue-900 font-semibold">Experience: {resume.experience ? `${resume.experience} yrs` : 'null'}</div>
+                    <div className="text-blue-700 font-semibold">{resume.phone || 'No phone'}</div>
+                    <div className="text-blue-700 font-semibold">{resume.email || 'No email'}</div>
                   </div>
 
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">

@@ -67,7 +67,7 @@ function App() {
       };
 
       const jobPayload = {
-        org_id: 1, // ✅ Hardcoded for now
+        org_id: 2, // ✅ Hardcoded for now
         exe_name: data.jobTitle || "run 1", // ✅ Job Title used as exe_name
         workflow_id: "resume_ranker",
         job_description: stripHtml(data.jobDescription),

@@ -9,7 +9,7 @@ const getRankLabel = (score) => {
 const ResumeList = () => {
   const [uploadedResumes, setUploadedResumes] = useState([]);
   const [searchedResumes, setSearchedResumes] = useState([]);
-  const [orgId, setOrgId] = useState('');
+  const [orgId] = useState('2');
   const [executionId, setExecutionId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [keySkillQuery, setKeySkillQuery] = useState('');
@@ -40,88 +40,10 @@ const ResumeList = () => {
     }
   }, [orgId, executionId, searched]);
 
-  // Fetch by org_id (Case ID)
-  const fetchResumesByOrgId = useCallback(async () => {
-    if (!orgId.trim()) {
-      setError('Please enter Case ID.');
-      setSearchedResumes([]);
-      return;
-    }
-
-    setSearched(true);
-    setLoading(true);
-    setError('');
-
-    try {
-      const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=1&workflow_id=resume_ranker`;
-      const response = await fetch(url);
-      const data = await response.json();
-
-      // const resumesData = Array.isArray(data.data) && Array.isArray(data.data[0]?.result)
-      //   ? data.data[0].result
-      //   : [];
-
-      const resumesData = Array.isArray(data.data)
-  ? data.data.flatMap(item => Array.isArray(item.result) ? item.result.map(res => ({
-      ...res,
-      exeSkill: item.exe_name // Keep track of skill from exe_name
-    })) : [])
-  : [];
-
-
-      const exeSkill = data.data[0]?.exe_name || '';
-
-      if (!resumesData.length) {
-        setError('No resumes found for this Case ID.');
-        setSearchedResumes([]);
-        return;
-      }
-
-      // const mappedResumes = resumesData.map((item, idx) => ({
-      //   id: idx,
-      //   name: item.name || `Candidate ${idx + 1}`,
-      //   Rank: item.score || 0,
-      //   justification: item.justification || '',
-      //   experience: typeof item.experience === 'number' ? item.experience : 0,
-      //   email: item.email === 'xxx' ? 'No email' : item.email,
-      //   phone: item.phone === 'xxx' ? 'No phone' : item.phone,
-      //   keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
-      // }));
-
-      const mappedResumes = resumesData.map((item, idx) => ({
-  id: idx,
-  name: item.name || `Candidate ${idx + 1}`,
-  Rank: item.score || 0,
-  justification: item.justification || '',
-  experience: typeof item.experience === 'number' ? item.experience : 0,
-  email: item.email === 'xxx' ? 'No email' : item.email || 'No email',
-  phone: item.phone === 'xxx' ? 'No phone' : item.phone || 'No phone',
-  keySkills: Array.isArray(item.keySkills) ? item.keySkills : [item.exeSkill || '']
-}));
-
-
-      setSearchedResumes(mappedResumes);
-      localStorage.setItem(`resumeResults_org_${orgId.trim()}`, JSON.stringify(mappedResumes));
-    } catch (err) {
-      console.error(err);
-      setError('Error retrieving resumes.');
-      setSearchedResumes([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
-
-  // Fetch by execution ID (without extra query params)
-  // const fetchResumesByExecutionId = useCallback(async () => {
-  // if (!executionId.trim()) {
-  //   setError('Please enter Execution ID.');
-  //   setSearchedResumes([]);
-  //   return;
-  // }
-// 
-// const fetchResumesByExecutionId = useCallback(async () => {
-//   if (!executionId.trim() || !orgId.trim()) {
-//     setError('Please enter both Case ID and Execution ID.');
+// // Fetch by org_id (Case ID)
+// const fetchResumesByOrgId = useCallback(async () => {
+//   if (!orgId.trim()) {
+//     setError('Please enter Case ID.');
 //     setSearchedResumes([]);
 //     return;
 //   }
@@ -131,25 +53,21 @@ const ResumeList = () => {
 //   setError('');
 
 //   try {
-//     const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=${orgId.trim()}&workflow_id=resume_ranker&id=${executionId.trim()}`;
+//     const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=2&workflow_id=resume_ranker`;
 //     const response = await fetch(url);
 //     const data = await response.json();
 
-//     // ⛏️ Fix: Get the first object from the keyed response (like { "0": {...} })
-//     const firstKey = Object.keys(data)[0];
-//     const executionData = data[firstKey];
+//     const resumesData = Array.isArray(data.data)
+//       ? data.data.flatMap(item => Array.isArray(item.result) ? item.result.map(res => ({
+//           ...res,
+//           exeSkill: item.exe_name // Keep track of skill from exe_name
+//         })) : [])
+//       : [];
 
-//     if (!executionData || !executionData.result) {
-//       setError('Invalid response from server.');
-//       setSearchedResumes([]);
-//       return;
-//     }
-
-//     const resumesData = Array.isArray(executionData.result) ? executionData.result : [];
-//     const exeSkill = executionData.exe_name || '';
+//     const exeSkill = data.data[0]?.exe_name || '';
 
 //     if (!resumesData.length) {
-//       setError('No resumes found for this Execution ID.');
+//       setError('No resumes found for this Case ID.');
 //       setSearchedResumes([]);
 //       return;
 //     }
@@ -162,11 +80,11 @@ const ResumeList = () => {
 //       experience: typeof item.experience === 'number' ? item.experience : 0,
 //       email: item.email === 'xxx' ? 'No email' : item.email || 'No email',
 //       phone: item.phone === 'xxx' ? 'No phone' : item.phone || 'No phone',
-//       keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
+//       keySkills: Array.isArray(item.keySkills) ? item.keySkills : [item.exeSkill || '']
 //     }));
 
 //     setSearchedResumes(mappedResumes);
-//     localStorage.setItem(`resumeResults_id_${executionId.trim()}`, JSON.stringify(mappedResumes));
+//     localStorage.setItem(`resumeResults_org_${orgId.trim()}`, JSON.stringify(mappedResumes));
 //   } catch (err) {
 //     console.error(err);
 //     setError('Error retrieving resumes.');
@@ -174,7 +92,8 @@ const ResumeList = () => {
 //   } finally {
 //     setLoading(false);
 //   }
-// }, [executionId, orgId]);
+// }, [orgId]);
+
 const fetchResumesByExecutionId = useCallback(async () => {
   if (!executionId.trim() || !orgId.trim()) {
     setError('Please enter both Case ID and Execution ID.');
@@ -234,7 +153,6 @@ const fetchResumesByExecutionId = useCallback(async () => {
 }, [executionId, orgId]);
 
 
-
   const combinedResumes = useMemo(() => [...uploadedResumes, ...searchedResumes], [
     uploadedResumes,
     searchedResumes,
@@ -277,7 +195,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
         <div className="w-full md:w-64 bg-blue-100 rounded-xl p-4 shadow-md flex-shrink-0">
           <h3 className="font-bold text-blue-900 mb-5 text-xl">🔍 Filter Options</h3>
 
-          {/* Search by Case ID (org_id) */}
+          {/* Search by Case ID (org_id)
           <form
             className="mb-4"
             onSubmit={(e) => {
@@ -301,7 +219,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
             >
               {loading ? 'Searching...' : 'Search'}
             </button>
-          </form>
+          </form> */}
 
           {/* Search by Execution ID (id) */}
           <form
@@ -311,10 +229,10 @@ const fetchResumesByExecutionId = useCallback(async () => {
               fetchResumesByExecutionId();
             }}
           >
-            <label className="font-semibold text-blue-800 block mb-2">Execution ID</label>
+            <label className="font-semibold text-blue-800 block mb-2">Case ID</label>
             <input
               type="text"
-              placeholder="Enter Execution ID"
+              placeholder="Enter Case ID"
               value={executionId}
               onChange={(e) => setExecutionId(e.target.value)}
               disabled={loading}
@@ -449,16 +367,16 @@ const fetchResumesByExecutionId = useCallback(async () => {
                 className="bg-white rounded-xl shadow-lg p-5 flex flex-col"
               >
                 <h3 className="text-xl font-semibold text-blue-900 mb-2">{resume.name}</h3>
-                <p className="text-sm text-gray-600 mb-1">
-                  <strong>Rank Score:</strong> {resume.Rank}
+                <p className="text-sm text-blue-700 mb-1">
+                  <strong>Score:</strong> {resume.Rank}
                 </p>
-                <p className="text-sm text-gray-600 mb-1">
+                <p className="text-sm text-blue-700 mb-1">
                   <strong>Experience:</strong> {resume.experience} years
                 </p>
-                <p className="text-sm text-gray-600 mb-1">
+                <p className="text-sm text-blue-700 mb-1">
                   <strong>Email:</strong> {resume.email}
                 </p>
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-sm text-blue-700 mb-3">
                   <strong>Phone:</strong> {resume.phone}
                 </p>
                 {resume.justification && (
