@@ -250,46 +250,45 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
                 </div>
 
                 {/* Job Type & Key Skills */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5 mb-4">
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                      <Users className="w-4 h-4" />
-                      Job Type <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      value={formData.jobType}
-                      onValueChange={(value) => handleInputChange('jobType', value)}
-                      disabled={isLoading}
-                    >
-                      <SelectTrigger className="bg-white/70">
-                        <SelectValue placeholder="Select job type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="full-time">Full Time</SelectItem>
-                        <SelectItem value="part-time">Part Time</SelectItem>
-                        <SelectItem value="contract">Contract</SelectItem>
-                        <SelectItem value="freelance">Freelance</SelectItem>
-                        <SelectItem value="internship">Internship</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.jobType && <p className="text-red-600 text-sm">{errors.jobType}</p>}
-                  </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5 mb-4">
+  <div className="space-y-2">
+    <Label className="flex items-center gap-2 text-slate-800 font-semibold">
+      <Users className="w-4 h-4" />
+      Job Type <span className="text-red-500">*</span>
+    </Label>
+    <Select
+      value={formData.jobType}
+      onValueChange={(value) => handleInputChange('jobType', value)}
+      disabled={isLoading}
+    >
+      <SelectTrigger className="bg-white/70">
+        <SelectValue placeholder="Select job type" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="full-time">Full Time</SelectItem>
+        <SelectItem value="part-time">Part Time</SelectItem>
+        <SelectItem value="contract">Contract</SelectItem>
+        <SelectItem value="freelance">Freelance</SelectItem>
+        <SelectItem value="internship">Internship</SelectItem>
+      </SelectContent>
+    </Select>
+    {errors.jobType && <p className="text-red-600 text-sm">{errors.jobType}</p>}
+  </div>
 
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2 text-slate-800 font-semibold">
-                      <GraduationCap className="w-4 h-4" />
-                      Key Skills <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      placeholder="e.g. JAVA, REACT"
-                      value={formData.requiredSkills}
-                      onChange={(e) => handleInputChange('requiredSkills', e.target.value)}
-                      className="bg-white/70"
-                      disabled={isLoading}
-                    />
-                    {errors.requiredSkills && <p className="text-red-600 text-sm">{errors.requiredSkills}</p>}
-                  </div>
-                </div>
+  <div className="space-y-2">
+    <Label className="flex items-center gap-2 text-slate-800 font-semibold">
+      <GraduationCap className="w-4 h-4" />
+      Key Skills <span className="text-red-500">*</span>
+    </Label>
+    <Input
+      placeholder=" separate skill with , e.g. JAVA, REACT"
+      value={formData.requiredSkills}
+      onChange={(e) => handleInputChange('requiredSkills', e.target.value)}
+      className="bg-white/70"
+      disabled={isLoading}
+    />
+  </div>
+</div>
 
                 {/* Resume Upload */}
                 <ResumeMultiDropzoneStyled

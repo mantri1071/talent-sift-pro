@@ -51,7 +51,7 @@ function App() {
 
     try {
       const form = new FormData();
-      const orgIdFromStorage = Number(localStorage.getItem("orgId") || 1);
+      const orgIdFromStorage = Number(localStorage.getItem("orgId"));
 
       const stripHtml = (html) => {
         const div = document.createElement("div");
