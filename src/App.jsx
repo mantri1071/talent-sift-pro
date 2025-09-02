@@ -51,9 +51,6 @@ const handleNewSubmit = async (data) => {
   }
 
   try {
-    // ✅ Check if org_id already exists
-    const existingOrgId = localStorage.getItem("orgId");
-
     const form = new FormData();
 
     const stripHtml = (html) => {
@@ -63,15 +60,13 @@ const handleNewSubmit = async (data) => {
     };
 
     const jobPayload = {
-      exe_name: data.requiredSkills,
+      org_id: 1, // Hardcoded for now
+      exe_name: data.jobTitle || "run 1", // Use Job Title from UI
       workflow_id: "resume_ranker",
-      job_description: stripHtml(data.jobDescription) || "No description",
+      job_description: stripHtml(data.jobDescription),
     };
 
-    // ✅ Include org_id only if it already exists
-    if (existingOrgId) {
-      jobPayload.org_id = Number(existingOrgId);
-    }
+    console.log("Sending payload:", jobPayload);
 
     form.append("data", JSON.stringify(jobPayload));
 
@@ -92,13 +87,9 @@ const handleNewSubmit = async (data) => {
       throw new Error(result.message || `Upload failed with status ${response.status}`);
     }
 
-    console.log("✅ Response:", result.data);
+    console.log("✅ Response data:", result.data);
 
-    // ✅ Save the new org_id if returned
-    if (result.data?.id) {
-      localStorage.setItem("orgId", result.data.id);
-    }
-
+    // Save results locally
     localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
 
     toast({
