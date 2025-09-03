@@ -20,6 +20,7 @@ const ResumeList = () => {
   const [orgId, setOrgId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [caseId, setCaseId] = useState(null);
 
   useEffect(() => {
     try {
@@ -27,34 +28,52 @@ const ResumeList = () => {
       const parsedSkills = storedSkills ? JSON.parse(storedSkills) : [];
       setUserKeySkills(Array.isArray(parsedSkills) ? parsedSkills : []);
 
-      const storedOrgId = localStorage.getItem("orgId");
-      if (storedOrgId) setOrgId(storedOrgId);
-
       const storedResumes = localStorage.getItem("resumeResults");
-      const parsedResumes = storedResumes ? JSON.parse(storedResumes) : [];
+const parsedResumes = storedResumes ? JSON.parse(storedResumes) : null;
 
-      if (Array.isArray(parsedResumes) && parsedResumes.length > 0) {
-        const mapped = parsedResumes.map((item, index) => {
-          const lowerJustification = (item.justification || "").toLowerCase();
+if (parsedResumes && Array.isArray(parsedResumes.result)) {
+  const mapped = parsedResumes.result.map((item, index) => ({
+    orgId: parsedResumes.id,
+    exeName: parsedResumes.exe_name,
+    candidateId: index + 1,
+    name: item.name || `Candidate ${index + 1}`,
+    Rank: item.score || 0,
+    justification: item.justification || "",
+    experience: typeof item.experience === "number" ? item.experience : 0,
+    email: item.email === "xxx" || !item.email ? "No email" : item.email,
+    phone: item.phone === "xxx" || !item.phone ? "No phone" : item.phone,
+  }));
 
-          const matchedSkills = parsedSkills.filter(skill =>
-            lowerJustification.includes(skill.toLowerCase())
-          );
+  setResumes(mapped);
+  setCaseId(parsedResumes.id);
+}
+      // const storedResumes = localStorage.getItem("resumeResults");
+      // const parsedResumes = storedResumes ? JSON.parse(storedResumes) : [];
 
-          return {
-            id: index,
-            name: item.name || `Candidate ${index + 1}`,
-            Rank: item.score || 0,
-            justification: item.justification || "",
-            experience: typeof item.experience === 'number' ? item.experience : 0,
-            email: item.email === 'xxx' ? 'No email' : item.email,
-            phone: item.phone === 'xxx' ? 'No phone' : item.phone,
-            keySkills: matchedSkills,
-          };
-        });
+      // if (Array.isArray(parsedResumes) && parsedResumes.length > 0) {
+      //   const mapped = parsedResumes.map((item, index) => {
+      //     const lowerJustification = (item.justification || "").toLowerCase();
 
-        setResumes(mapped);
-      }
+      //     const matchedSkills = parsedSkills.filter(skill =>
+      //       lowerJustification.includes(skill.toLowerCase())
+      //     );
+
+      //     console.log("response from parsed data:", storedResumes);
+      //     return {
+      //       CaseID: storedOrgId || `candidate-${index + 1}`,
+      //       id: index,
+      //       name: item.name || `Candidate ${index + 1}`,
+      //       Rank: item.score || 0,
+      //       justification: item.justification || "",
+      //       experience: typeof item.experience === 'number' ? item.experience : 0,
+      //       email: item.email === 'xxx' ? 'No email' : item.email,
+      //       phone: item.phone === 'xxx' ? 'No phone' : item.phone,
+      //       keySkills: matchedSkills,
+      //     };
+      //   });
+
+      //   setResumes(mapped);
+      // }
     } catch (err) {
       console.error("Error loading or parsing data:", err);
     }
@@ -202,11 +221,11 @@ const ResumeList = () => {
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
 
                     {/* ✅ Floating Case ID Display */}
-        {/* {orgId && (
-          <div className="fixed top-2 right-2 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
-            Case ID: {orgId}
-          </div>
-        )} */}
+{caseId && (
+  <div className="top-4 right-2 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+    Case ID: {caseId}
+  </div>
+)}
 
           </div>
 
@@ -215,11 +234,9 @@ const ResumeList = () => {
         <button
         type="button"
           onClick={() => navigate(-1)}
-          // If you do NOT use React Router, use this instead:
-          // onClick={() => window.history.back()}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          ← Home
+          Home
         </button>
       </div>
 
@@ -245,7 +262,8 @@ const ResumeList = () => {
                   className="bg-white rounded-2xl shadow-md p-5 flex flex-col gap-3 border border-blue-200"
                 >
                   <div className="text-gray-900 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 w-full">
-                    <div className="font-bold text-xl col-span-full sm:col-span-1">{resume.name}</div>
+                    
+                    <div className="text-2xl font-bold text-blue-900">{resume.name}</div> 
                     <div className="text-blue-900 font-semibold">Score: {resume.Rank} {getRankLabel(resume.Rank)}</div>
                     <div className="text-blue-900 font-semibold">Experience: {resume.experience ? `${resume.experience} yrs` : 'null'}</div>
                     <div className="text-blue-700 font-semibold">{resume.phone || 'No phone'}</div>

@@ -14,7 +14,7 @@ const ResumeList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [keySkillQuery, setKeySkillQuery] = useState('');
   const [scoreRange, setScoreRange] = useState([1, 10]);
-  const [experienceRange, setExperienceRange] = useState([0, 50]); // Adjusted max to 50
+  const [experienceRange, setExperienceRange] = useState([0, 35]); // Adjusted max to 50
   const [filterEmail, setFilterEmail] = useState(false);
   const [filterPhone, setFilterPhone] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -288,7 +288,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
           <Range
             step={1}
             min={0}
-            max={50} // max experience set to 50 years
+            max={35} // max experience set to 50 years
             values={experienceRange}
             onChange={setExperienceRange}
             renderTrack={({ props, children }) => (
@@ -296,9 +296,9 @@ const fetchResumesByExecutionId = useCallback(async () => {
                 <div
                   style={{
                     height: '6px',
-                    width: `${((experienceRange[1] - experienceRange[0]) / 50) * 100}%`,
+                    width: `${((experienceRange[1] - experienceRange[0]) / 35) * 100}%`,
                     backgroundColor: '#2563eb',
-                    marginLeft: `${(experienceRange[0] / 50) * 100}%`,
+                    marginLeft: `${(experienceRange[0] / 35) * 100}%`,
                   }}
                 />
                 {children}

@@ -101,7 +101,8 @@ function App() {
         localStorage.setItem("caseId", result.data.id); // ✅ Persist across sessions
       }
 
-      localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
+      localStorage.setItem("resumeResults", JSON.stringify(result.data));
+    //  localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
 
       toast({
         title: "Success!",
@@ -158,7 +159,7 @@ function App() {
             <span className="text-2xl font-serif font-bold text-gray-100">Talent Sift</span>
           </div>
           <div className="absolute top-6 right-0 p-4 flex items-center justify-end space-x-2">
-            <span className="text-m font-serif text-gray-100">Beta Version</span>
+            <span className="text-s font-serif text-gray-200">Beta Version</span>
           </div>
         </div>
 
