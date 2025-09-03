@@ -13,7 +13,7 @@ const ResumeList = () => {
   const [resumes, setResumes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [scoreRange, setScoreRange] = useState([1, 10]);
-  const [experienceRange, setExperienceRange] = useState([0, 10]);
+  const [experienceRange, setExperienceRange] = useState([0, 35]);
   const [filterEmail, setFilterEmail] = useState(false);
   const [filterPhone, setFilterPhone] = useState(false);
   const [userKeySkills, setUserKeySkills] = useState([]);
@@ -161,7 +161,7 @@ const ResumeList = () => {
                 {children}
               </div>
             )}
-            renderThumb={(props) => renderThumb(props, scoreRange)}
+            renderThumb={renderThumb}
           />
 
           {/* Email & Phone Filters */}
