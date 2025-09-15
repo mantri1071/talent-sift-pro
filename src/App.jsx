@@ -24,6 +24,55 @@ function App() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Auto-populate jobDescription and requiredSkills from URL params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+  
+    const decodeSafe = (str) => {
+      try {
+        return decodeURIComponent(str);
+      } catch {
+        return '';
+      }
+    };
+  
+    const jobTypeLabel = decodeSafe(params.get('jobtype') || '').trim();
+  
+    // Map labels from URL param to select values exactly
+    const jobTypeMap = {
+      'Full time': 'fulltime',
+      'Part time': 'parttime',
+      'Contract': 'contract',
+      'Freelance': 'freelance',
+      'Internship': 'internship',
+    };
+  
+    const mappedJobType = jobTypeMap[jobTypeLabel] || '';
+  
+    setFormData(prev => ({
+      ...prev,
+      requiredSkills: decodeSafe(params.get('skills') || ''),
+      jobDescription: decodeSafe(params.get('job') || ''),
+      yearsOfExperience: decodeSafe(params.get('yoe') || ''),
+      jobTitle: decodeSafe(params.get('jobtitle') || ''),
+      jobType: mappedJobType,  // THIS MUST BE a valid option value or empty string
+    }));
+  }, []);
+  
+  // Helper to strip HTML tags from job description
+  const stripHtml = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    // Add space after block elements to keep words separate
+    const blockTags = ['p', 'div', 'br', 'li'];
+    blockTags.forEach(tag => {
+      const elements = div.getElementsByTagName(tag);
+      for (let el of elements) {
+        el.appendChild(document.createTextNode(' '));
+      }
+    });
+    return div.textContent || div.innerText || '';
+  };
   // ✅ Restore orgId on load if available
   useEffect(() => {
     const storedId = localStorage.getItem("caseId");
