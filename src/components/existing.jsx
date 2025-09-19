@@ -184,7 +184,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-grey-800 p-4">
+    <div className="min-h-screen w-full bg-gray-100 p-4">
       <div className="bg-white/80 shadow-lg rounded-xl w-full p-4 flex flex-col md:flex-row gap-6">
         {/* Sidebar Filters */}
         <div className="w-full md:w-64 bg-blue-100 rounded-xl p-4 shadow-md flex-shrink-0">

@@ -113,12 +113,12 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-cyan-400 to-blue-500 p-4 sm:p-6 flex justify-center items-start">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 flex justify-center items-start">
 
       <div className="bg-white/80 backdrop-blur-md shadow-lg rounded-xl w-full max-w-6xl p-4 sm:p-6 flex flex-col md:flex-row gap-6 md:gap-8">
 
         {/* Sidebar */}
-        <div className="w-full md:w-64 bg-blue-100 rounded-xl p-4 sm:p-6 shadow-md flex flex-col flex-shrink-0">
+        <div className="w-full md:w-64 bg-blue-500 rounded-xl p-4 sm:p-6 shadow-md flex flex-col flex-shrink-0">
           <h3 className="font-bold text-blue-900 mb-5 text-xl">🔍 Filter Options</h3>
 
           <input
@@ -222,7 +222,7 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
 
                     {/* ✅ Floating Case ID Display */}
 {caseId && (
-  <div className="top-4 right-2 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+  <div className="top-4 right-2 bg-orange-200 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
     Case ID: {caseId}
   </div>
 )}
