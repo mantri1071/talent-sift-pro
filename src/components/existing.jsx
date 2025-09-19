@@ -184,37 +184,12 @@ const fetchResumesByExecutionId = useCallback(async () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-r from-cyan-400 to-blue-500 p-4">
+    <div className="min-h-screen w-full bg-grey-800 p-4">
       <div className="bg-white/80 shadow-lg rounded-xl w-full p-4 flex flex-col md:flex-row gap-6">
         {/* Sidebar Filters */}
         <div className="w-full md:w-64 bg-blue-100 rounded-xl p-4 shadow-md flex-shrink-0">
           <h3 className="font-bold text-blue-900 mb-5 text-xl">🔍 Filter Options</h3>
 
-          {/* Search by Case ID (org_id)
-          <form
-            className="mb-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              fetchResumesByOrgId();
-            }}
-          >
-            <label className="font-semibold text-blue-800 block mb-2">Case ID</label>
-            <input
-              type="text"
-              placeholder="Enter Case ID"
-              value={orgId}
-              onChange={(e) => setOrgId(e.target.value)}
-              disabled={loading}
-              className="w-full px-4 py-2 border border-blue-300 rounded-md"
-            />
-            <button
-              type="submit"
-              disabled={loading || !orgId.trim()}
-              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full disabled:opacity-50"
-            >
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-          </form> */}
 
           {/* Search by Execution ID (id) */}
           <form
