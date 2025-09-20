@@ -271,12 +271,13 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
                     <div className="text-blue-700 font-semibold">{resume.phone || 'No phone'}</div>
                     <div className="text-blue-700 font-semibold">{resume.email || 'No email'}</div>
                   </div>
-    <button
-      onClick={handleShortlist}
-      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-    >
-      Shortlist
-    </button>
+<button
+  onClick={() => handleShortlist(resume)}  // Pass the candidate here
+  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+>
+  Shortlist
+</button>
+
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">
                     {resume.justification}
                   </div>
