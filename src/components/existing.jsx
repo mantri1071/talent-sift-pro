@@ -184,37 +184,12 @@ const fetchResumesByExecutionId = useCallback(async () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-r from-cyan-400 to-blue-500 p-4">
+    <div className="min-h-screen w-full bg-gray-100 p-4">
       <div className="bg-white/80 shadow-lg rounded-xl w-full p-4 flex flex-col md:flex-row gap-6">
         {/* Sidebar Filters */}
-        <div className="w-full md:w-64 bg-blue-100 rounded-xl p-4 shadow-md flex-shrink-0">
-          <h3 className="font-bold text-blue-900 mb-5 text-xl">🔍 Filter Options</h3>
+        <div className="w-full md:w-64 bg-gray-100 rounded-xl p-4 shadow-md flex-shrink-0">
+          <h3 className="font-bold text-gray-800 mb-5 text-xl">🔍 Filter Options</h3>
 
-          {/* Search by Case ID (org_id)
-          <form
-            className="mb-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              fetchResumesByOrgId();
-            }}
-          >
-            <label className="font-semibold text-blue-800 block mb-2">Case ID</label>
-            <input
-              type="text"
-              placeholder="Enter Case ID"
-              value={orgId}
-              onChange={(e) => setOrgId(e.target.value)}
-              disabled={loading}
-              className="w-full px-4 py-2 border border-blue-300 rounded-md"
-            />
-            <button
-              type="submit"
-              disabled={loading || !orgId.trim()}
-              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full disabled:opacity-50"
-            >
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-          </form> */}
 
           {/* Search by Execution ID (id) */}
           <form
@@ -224,7 +199,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
               fetchResumesByExecutionId();
             }}
           >
-            <label className="font-semibold text-blue-800 block mb-2">Case ID</label>
+            <label className="font-semibold text-gray-600 block mb-2">Case ID</label>
             <input
               type="text"
               placeholder="Enter Case ID"
@@ -253,8 +228,8 @@ const fetchResumesByExecutionId = useCallback(async () => {
             className="mb-4 px-4 py-3 rounded-lg border border-blue-300 focus:outline-none text-gray-700"
           />
 
-          <label className="font-semibold text-blue-800 mb-3 block text-lg">Score Range</label>
-          <div className="flex justify-between mb-3 text-blue-900 font-semibold text-sm">
+          <label className="font-semibold text-gray-600 mb-3 block text-lg">Score Range</label>
+          <div className="flex justify-between mb-3 text-gray-900 font-semibold text-sm">
             <span>{scoreRange[0]}</span>
             <span>{scoreRange[1]}</span>
           </div>
@@ -280,8 +255,8 @@ const fetchResumesByExecutionId = useCallback(async () => {
             renderThumb={renderScoreThumb}
           />
 
-          <label className="font-semibold text-blue-800 mt-6 mb-3 block text-lg">Experience (years)</label>
-          <div className="flex justify-between mb-3 text-blue-900 font-semibold text-sm">
+          <label className="font-semibold text-gray-600 mt-6 mb-3 block text-lg">Experience (years)</label>
+          <div className="flex justify-between mb-3 text-gray-900 font-semibold text-sm">
             <span>{experienceRange[0]}</span>
             <span>{experienceRange[1]}</span>
           </div>
@@ -308,7 +283,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
           />
 
           <div className="mt-6 flex flex-row gap-x-6">
-            <label className="inline-flex items-center gap-2 text-blue-900 font-semibold cursor-pointer">
+            <label className="inline-flex items-center gap-2 text-gray-600 font-semibold cursor-pointer">
               <input
                 type="checkbox"
                 checked={filterEmail}
@@ -318,7 +293,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
               />
               Email
             </label>
-            <label className="inline-flex items-center gap-2 text-blue-900 font-semibold cursor-pointer">
+            <label className="inline-flex items-center gap-2 text-gray-600 font-semibold cursor-pointer">
               <input
                 type="checkbox"
                 checked={filterPhone}
@@ -334,10 +309,10 @@ const fetchResumesByExecutionId = useCallback(async () => {
         {/* Resume List */}
         <motion.div layout className="flex-1 space-y-6 overflow-auto max-h-[80vh]">
           <div className="flex items-center justify-between mb-1">
-            <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
+            <h2 className="text-3xl font-semibold text-gray-700">📄 Talent Sift</h2>
           </div>
           <div className="flex justify-between items-center mb-4">
-                        <p className="text-blue-800 font-medium">
+                        <p className="text-orange-500 font-medium">
               Showing {filteredResumes.length} result{filteredResumes.length !== 1 ? 's' : ''}
             </p>
           </div>

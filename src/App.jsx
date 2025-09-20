@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
+import Footer from "@/components/Footer";
 import JobFormStep1 from "@/components/JobFormStep1";
 import ResumeList from "@/components/existing";
 import logo from "./logo.png";
@@ -174,8 +175,9 @@ function App() {
     setSubmittedExisting(true);
   };
 
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-350 via-blue-500 to-blue-600 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-100 relative overflow-hidden">
       <Helmet>
         <title>Talent Sift - Resume Screening Platform</title>
         <meta
@@ -197,7 +199,7 @@ function App() {
       </motion.div>
 
       {/* App Content */}
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 min-h-screen flex flex-col ">
         {/* Logo/Header */}
         <div className="p-8 flex items-center justify-start space-x-4">
           <img src={logo} alt="Talent Sift Logo" className="h-10" />
@@ -205,10 +207,10 @@ function App() {
             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
               <span className="text-blue font-bold">T</span>
             </div>
-            <span className="text-2xl font-serif font-bold text-gray-100">Talent Sift</span>
+            <span className="text-2xl font-serif font-bold text-gray-800">Talent Sift</span>
           </div>
           <div className="absolute top-6 right-0 p-4 flex items-center justify-end space-x-2">
-            <span className="text-s font-serif text-gray-200">Beta Version</span>
+            <span className="text-s font-serif text-gray-500">Beta Version</span>
           </div>
         </div>
 
@@ -229,6 +231,11 @@ function App() {
         {/* Global Toaster */}
         <Toaster />
       </div>
+
+      {/* Footer */}
+          <div className="mt-8 ml-1 w-full">
+            <Footer />
+          </div>
     </div>
   );
 }

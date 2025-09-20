@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ResumeMultiDropzoneStyled from '@/components/ResumeMultiDropzoneStyled';
-import Footer from '@/components/Footer'; 
 import pic from '../pic.png';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -129,7 +128,7 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
             <div className="text-lg font-semibold text-blue-600 animate-pulse">Processing...</div>
           </div>
         )}
-        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-8">
+        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-24">
           {/* Left Side */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -139,9 +138,9 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
           >
             <div className="relative w-full max-w-6xl mx-auto">
               <div className="mb-6 text-center max-w-3xl mx-auto px-4">
-                <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight text-white">
+                <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight text-orange-400">
                   Resume Ranking <br />
-                  <span className="text-black">for Perfect Matches</span>
+                  <span className="text-gray-800 whitespace-nowrap">for Perfect Matches</span>
                 </h1>
                 <p className="mt-4 text-lg text-gray-800">
                   Our AI-powered tool compares resumes to job descriptions, helping you find the most qualified candidates.
@@ -173,7 +172,7 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-sky-50/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8"
+              className="bg-gray-100 backdrop-blur-lg rounded-3xl shadow-2xl p-8"
             >
               {/* Mode Switch */}
               <div className="mb-6 flex items-center space-x-6">
@@ -328,11 +327,7 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
           </motion.div>
         </motion.div>
       </div>
-
     </main>
-    <div className="mt-8 ml-1 w-full">
-      <Footer />
-    </div>
   </div>
 );
 };
