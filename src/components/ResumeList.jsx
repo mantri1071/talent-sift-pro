@@ -60,6 +60,34 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
     }
   }, [resumes, orgId]);
 
+  const handleShortlist = async (candidate) => {
+  try {
+    const res = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: candidate.name,
+        email: candidate.email,
+        phone: candidate.phone,
+        experience: candidate.experience,
+        score: candidate.score,
+        description: candidate.summary, // candidate summary
+      }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert(`Candidate ${candidate.name} sent to QNTRL.`);
+    } else {
+      alert(`Failed: ${data.error}`);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error sending email.");
+  }
+};
+
+
   const filteredResumes = useMemo(() => {
   const query = searchQuery.toLowerCase().trim();
 
@@ -243,7 +271,12 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
                     <div className="text-blue-700 font-semibold">{resume.phone || 'No phone'}</div>
                     <div className="text-blue-700 font-semibold">{resume.email || 'No email'}</div>
                   </div>
-
+    <button
+      onClick={handleShortlist}
+      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+    >
+      Shortlist
+    </button>
                   <div className="text-gray-800 mt-2 text-sm whitespace-pre-line">
                     {resume.justification}
                   </div>
