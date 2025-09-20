@@ -14,8 +14,8 @@ module.exports = async (req, res) => {
     }
 
     const msg = {
-      to: process.env.QNTRL_EMAIL,
-      from: process.env.FROM_EMAIL,
+      to: "768363363_30725000001300117@startitnow.mail.qntrl.com", // QNTRL email
+      from: "sumanth1mantri@gmail.com", // must be verified in SendGrid
       subject: `Shortlisted Candidate: ${name}`,
       text: `
 Candidate has been shortlisted.
