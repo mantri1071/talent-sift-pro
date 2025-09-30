@@ -287,7 +287,23 @@ const JobFormStep1 = ({ formData, handleInputChange, onNewSubmit, onExistingSubm
       disabled={isLoading}
     />
   </div>
-</div>
+  </div>
+
+  
+                <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-slate-800 font-semibold">
+                  Industry <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  placeholder="e.g. Information Technology, Healthcare"
+                  value={formData.industry}
+                  onChange={(e) => handleInputChange('industry', e.target.value)}
+                  className="bg-white/70 border-gray-300"
+                  disabled={isLoading}
+                />
+                {errors.industry && <p className="text-red-600 text-sm">{errors.industry}</p>}
+              </div>
+
 
                 {/* Resume Upload */}
                 <ResumeMultiDropzoneStyled
