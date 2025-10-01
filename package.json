@@ -62,14 +62,14 @@
   "main": "postcss.config.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mantri1071/talent-sift.git"
+    "url": "git+https://github.com/mantri1071/talent-sift-pro.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mantri1071/talent-sift/issues"
+    "url": "https://github.com/mantri1071/talent-sift-pro/issues"
   },
-  "homepage": "https://github.com/mantri1071/talent-sift#readme",
+  "homepage": "https://github.com/mantri1071/talent-sift-pro#readme",
   "description": ""
 }
