@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Range } from 'react-range';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';  // <-- Import useNavigate
+import Footer from './Footer'; // Ensure Footer is imported
 
 const getRankLabel = (score) => {
   // You can fill this function with labels for scores if needed
@@ -131,6 +132,14 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
             className="mb-6 px-4 py-3 rounded-lg border border-blue-300 focus:outline-none text-gray-700"
           />
 
+         {/* Key Skills */}
+          <div>
+            <h3 className="font-bold text-blue-900 mt-3 mb-3 text-xl">🛠️ Key Skills</h3>
+            <div className="text-sm bg-white border border-blue-200 rounded-md p-3 text-blue-900 shadow-inner min-h-[40px] mb-4">
+              {userKeySkills.length > 0 ? userKeySkills.join(', ') : 'No key skills available'}
+            </div>
+          </div>
+
           {/* Score Range */}
           <label className="font-semibold text-blue-800 mb-3 block text-lg">Score Range</label>
           <div className="flex justify-between mb-3 text-blue-900 font-semibold text-sm">
@@ -206,15 +215,6 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
               Phone
             </label>
           </div>
-
-          {/* Key Skills */}
-          <div>
-            <h3 className="font-bold text-blue-900 mt-8 mb-3 text-xl">🛠️ Key Skills</h3>
-            <div className="text-sm bg-white border border-blue-200 rounded-md p-3 text-blue-900 shadow-inner min-h-[40px]">
-              {userKeySkills.length > 0 ? userKeySkills.join(', ') : 'No key skills available'}
-            </div>
-          </div>
-
         </div>
 
         {/* Resume Results */}
@@ -223,13 +223,24 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
 
                     {/* ✅ Floating Case ID Display */}
+<div className="flex items-center justify-between mb-4 gap-4">
+  {/* Right Side - Case ID + Candidate Button */}
 {caseId && (
   <div className="top-4 right-2 bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
     Case ID: {caseId}
   </div>
 )}
-
-          </div>
+ <button
+      onClick={() =>
+        (window.location.href =
+          "https://core.qntrl.com/blueprint/startitnow/job/processtab/30725000001415521/30725000000000419")
+      }
+      className="bg-orange-400 hover:bg-orange-600 text-white font-bold px-6 py-2 rounded-lg shadow-md transition"
+    >
+      Candidate Management
+    </button>
+  </div>
+</div>
 
        {/* Back button */}
       <div className="w-full max-w-6xl mb-4">
@@ -286,9 +297,9 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
               ))
             )}
           </ul>
-        </motion.div>
+          </motion.div>
       </div>
-    </div>
+      </div>
   );
 };
 

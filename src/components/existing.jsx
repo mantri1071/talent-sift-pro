@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Range } from 'react-range';
+import { useLocation } from "react-router-dom";
 
 const getRankLabel = (score) => {
   return '';
@@ -20,6 +21,9 @@ const ResumeList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
+  const location = useLocation();
+const [displayKeySkills, setDisplayKeySkills] = useState([]);
+
 
   // Load from localStorage after a search
   useEffect(() => {
@@ -136,6 +140,12 @@ const fetchResumesByExecutionId = useCallback(async () => {
       keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
     }));
 
+        // ✅ Extract all unique skills for the sidebar display
+    const skillsForSidebar = [
+      ...new Set(mappedResumes.flatMap(r => r.keySkills || []))
+    ];
+    setDisplayKeySkills(skillsForSidebar);
+
     setSearchedResumes(mappedResumes);
     localStorage.setItem(`resumeResults_id_${executionId.trim()}`, JSON.stringify(mappedResumes));
   } catch (err) {
@@ -179,6 +189,8 @@ const fetchResumesByExecutionId = useCallback(async () => {
     });
   }, [searchQuery, keySkillQuery, scoreRange, experienceRange, filterEmail, filterPhone, combinedResumes]);
 
+  const storedSkills = JSON.parse(localStorage.getItem("keySkills") || "[]");
+  
   const renderScoreThumb = ({ index, props }) => (
     <div {...props} key={index} className="h-5 w-5 rounded-full bg-blue-600 shadow-md cursor-pointer" />
   );
@@ -227,6 +239,26 @@ const fetchResumesByExecutionId = useCallback(async () => {
             disabled={loading}
             className="mb-4 px-4 py-3 rounded-lg border border-blue-300 focus:outline-none text-gray-700"
           />
+
+ {/* Key Skills */}
+<div className="mt-6">
+  <h3 className="font-bold mb-3 text-lg">🛠️ Key Skills</h3>
+  <div className="flex flex-wrap gap-2 bg-white border border-gray-700 rounded-md p-3 shadow-inner min-h-[40px]">
+    {displayKeySkills.length > 0 ? (
+      displayKeySkills.map((skill) => (
+        <span
+          key={skill}
+          className="px-2 py-1 bg-orange-400 text-white text-xs font-medium rounded-lg"
+        >
+          {skill}
+        </span>
+      ))
+    ) : (
+      <p className="text-gray-400 text-sm">No key skills available</p>
+    )}
+  </div>
+</div>
+
 
           <label className="font-semibold text-gray-600 mb-3 block text-lg">Score Range</label>
           <div className="flex justify-between mb-3 text-gray-900 font-semibold text-sm">
