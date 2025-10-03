@@ -14,6 +14,7 @@ function App() {
     jobTitle: "",
     yearsOfExperience: "",
     jobType: "",
+    industry: "",
     email: "",
     requiredSkills: "",
     jobDescription: "",
@@ -57,6 +58,7 @@ function App() {
       yearsOfExperience: decodeSafe(params.get('yoe') || ''),
       jobTitle: decodeSafe(params.get('title') || ''),
       email: decodeSafe(params.get('mail') || ''),
+      industry: decodeSafe(params.get('industry') || ''),
       jobType: mappedJobType,  // THIS MUST BE a valid option value or empty string
     }));
   }, []);
