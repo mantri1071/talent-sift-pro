@@ -12,6 +12,8 @@ const ResumeList = () => {
   const [searchedResumes, setSearchedResumes] = useState([]);
   const [orgId] = useState('2');
   const [executionId, setExecutionId] = useState('');
+  const [exeName, setexeName] = useState('');
+  const [skillInput, setSkillInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [keySkillQuery, setKeySkillQuery] = useState('');
   const [scoreRange, setScoreRange] = useState([1, 10]);
@@ -43,6 +45,80 @@ const [displayKeySkills, setDisplayKeySkills] = useState([]);
       }
     }
   }, [orgId, executionId, searched]);
+  
+const fetchResumesByExeName = useCallback(async (exeName = '') => {
+  console.log('fetchResumesByExeName called with exeName:', exeName);
+  if (!exeName.trim()) {
+    console.log('exeName is empty or whitespace');
+    setError('Please enter an execution name.');
+    setSearchedResumes([]);
+    return;
+  }
+
+  setSearched(true);
+  setLoading(true);
+  setError('');
+
+  try {
+    const url = `https://agentic-ai.co.in/api/agentic-ai/workflow-exe?org_id=2&workflow_id=resume_ranker`;
+    const response = await fetch(url);
+    console.log('response status:', response.status);
+    const data = await response.json();
+    console.log('data from API:', data);
+
+    const allExecutions = Array.isArray(data.data) ? data.data : [];
+    console.log('allExecutions count:', allExecutions.length);
+
+    const matchedExecutions = allExecutions.filter(item =>
+      item.exe_name &&
+      item.exe_name.toLowerCase().includes(exeName.toLowerCase())
+    );
+    console.log('matchedExecutions:', matchedExecutions);
+
+    if (matchedExecutions.length === 0) {
+      console.log('No executions match exeName');
+      setError(`No resumes found for exe_name: ${exeName}`);
+      setSearchedResumes([]);
+      return;
+    }
+
+    const mappedResumes = matchedExecutions.flatMap((execution, execIdx) => {
+      console.log(`Processing execution ${execIdx} with name`, execution.exe_name);
+      const results = Array.isArray(execution.result) ? execution.result : [];
+      console.log('execution.result length:', results.length);
+      return results.map((item, idx) => {
+        console.log('item:', item);
+        return {
+          id: `${execution.exe_name}-${idx}`,
+          name: item.name || `Candidate ${idx + 1}`,
+          Rank: item.score || 0,
+          justification: item.justification || '',
+          experience: typeof item.experience === 'number' ? item.experience : 0,
+          email: item.email === 'xxx' ? 'No email' : item.email || 'No email',
+          phone: item.phone === 'xxx' ? 'No phone' : item.phone || 'No phone',
+          keySkills: Array.isArray(item.keySkills)
+            ? item.keySkills
+            : [execution.exe_name],
+          executionName: execution.exe_name,
+        };
+      });
+    });
+
+    console.log('mappedResumes:', mappedResumes);
+
+    setSearchedResumes(mappedResumes);
+    setError(null);
+
+  } catch (err) {
+    console.error('Caught error in fetchResumesByExeName:', err);
+    setError('Error retrieving resumes.');
+    setSearchedResumes([]);
+  } finally {
+    setLoading(false);
+    console.log('loading false');
+  }
+}, []);
+
 
 // // Fetch by org_id (Case ID)
 const fetchResumesByOrgId = useCallback(async () => {
@@ -140,6 +216,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
       keySkills: Array.isArray(item.keySkills) ? item.keySkills : [exeSkill],
     }));
 
+
         // ✅ Extract all unique skills for the sidebar display
     const skillsForSidebar = [
       ...new Set(mappedResumes.flatMap(r => r.keySkills || []))
@@ -147,7 +224,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
     setDisplayKeySkills(skillsForSidebar);
 
     setSearchedResumes(mappedResumes);
-    localStorage.setItem(`resumeResults_id_${executionId.trim()}`, JSON.stringify(mappedResumes));
+    localStorage.setItem(`resumeResults_id_${exeName.trim()}`, JSON.stringify(mappedResumes));
   } catch (err) {
     console.error(err);
     setError('Error retrieving resumes.');
@@ -155,7 +232,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
   } finally {
     setLoading(false);
   }
-}, [executionId, orgId]);
+}, [exeName]);
 
 
   const combinedResumes = useMemo(() => [...uploadedResumes, ...searchedResumes], [
@@ -203,7 +280,7 @@ const fetchResumesByExecutionId = useCallback(async () => {
           <h3 className="font-bold text-gray-800 mb-5 text-xl">🔍 Filter Options</h3>
 
 
-          {/* Search by Execution ID (id) */}
+          {/* Search by Execution ID (id)
           <form
             className="mb-4"
             onSubmit={(e) => {
@@ -226,6 +303,33 @@ const fetchResumesByExecutionId = useCallback(async () => {
               className="mt-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full disabled:opacity-50"
             >
               {loading ? 'Searching...' : 'Search by ID'}
+            </button>
+            {error && <p className="mt-2 text-red-600 text-sm">{error}</p>}
+          </form> */}
+
+                    {/* Search by Keyskill */}
+          <form
+            className="mb-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              fetchResumesByExeName(exeName);
+            }}
+          >
+            <label className="font-semibold text-gray-600 block mb-2">Key Skill</label>
+            <input
+              type="text"
+              placeholder="Enter Skill"
+              value={exeName}
+              onChange={(e) => setexeName(e.target.value)}
+              disabled={loading}
+              className="w-full px-4 py-2 border border-green-300 rounded-md"
+            />
+            <button
+              type="submit"
+              disabled={loading || !exeName.trim()}
+              className="mt-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full disabled:opacity-50"
+            >
+              {loading ? 'Searching...' : 'Search by skill'}
             </button>
             {error && <p className="mt-2 text-red-600 text-sm">{error}</p>}
           </form>

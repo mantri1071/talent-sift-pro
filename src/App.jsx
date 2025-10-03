@@ -14,7 +14,7 @@ function App() {
     jobTitle: "",
     yearsOfExperience: "",
     jobType: "",
-    location: "",
+    email: "",
     requiredSkills: "",
     jobDescription: "",
     resumeFiles: [],
@@ -89,7 +89,7 @@ function App() {
 
   // ✅ New Submission
   const handleNewSubmit = async (data) => {
-    if (!data.jobTitle || !data.jobType || !data.jobDescription) {
+    if (!data.jobTitle || !data.jobType || !data.jobDescription || !data.email) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields before submitting.",
@@ -108,6 +108,24 @@ function App() {
     }
 
     try {
+    // --- 1. Validate user email ---
+    const validateRes = await fetch("/api/validateUser", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: data.email }), // coming from input
+    });
+
+    const validateData = await validateRes.json();
+
+    if (validateRes.status !== 200 || validateData.status !== "success") {
+      toast({
+        title: "Unauthorized",
+        description: validateData.message || "Unauthorized company domain",
+        variant: "destructive",
+      });
+      return;
+    }
+
       const form = new FormData();
 
       const stripHtml = (html) => {
