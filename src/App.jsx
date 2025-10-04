@@ -41,8 +41,8 @@ function App() {
     const jobTypeLabel = decodeSafe(params.get("jobtype") || "").trim();
 
     const jobTypeMap = {
-      "Full time": "fulltime",
-      "Part time": "parttime",
+      Fulltime: "fulltime",
+      Parttime: "parttime",
       Contract: "contract",
       Freelance: "freelance",
       Internship: "internship",
@@ -164,6 +164,7 @@ function App() {
 
       const jobPayload = {
         org_id: rawDomain === "startitnow.co.in" ? 3 : 2,
+        job_title: data.jobTitle,
         exe_name: data.requiredSkills || "run 1",
         workflow_id: "resume_ranker",
         job_description: stripHtml(data.jobDescription),

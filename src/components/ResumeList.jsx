@@ -62,6 +62,38 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
     }
   }, [resumes, orgId]);
 
+  useEffect(() => {
+  try {
+    const storedResumes = localStorage.getItem("resumeResults");
+    const parsedResumes = storedResumes ? JSON.parse(storedResumes) : null;
+
+    if (parsedResumes?.email) {
+      const email = parsedResumes.email;
+      const domain = email.split("@")[1]?.toLowerCase();
+      const key = `${domain.replace(/\./g, "_")}_credits`;
+
+      const credits = parseInt(localStorage.getItem(key), 10);
+      if (!isNaN(credits)) {
+        setUpdatedCredits(credits);
+      }
+    } else {
+      // Fallback: try getting email from somewhere else (e.g. job form state)
+      const fallbackEmail = localStorage.getItem("formEmail");
+      if (fallbackEmail) {
+        const domain = fallbackEmail.split("@")[1]?.toLowerCase();
+        const key = `${domain.replace(/\./g, "_")}_credits`;
+
+        const credits = parseInt(localStorage.getItem(key), 10);
+        if (!isNaN(credits)) {
+          setUpdatedCredits(credits);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching credits:", err);
+  }
+}, []);
+
 //   const handleShortlist = async (candidate) => {
 //   try {
 //     const res = await fetch("/api/send-email", {
