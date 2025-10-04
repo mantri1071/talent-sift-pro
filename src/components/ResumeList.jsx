@@ -22,6 +22,7 @@ const ResumeList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [caseId, setCaseId] = useState(null);
+  const [updatedCredits, setUpdatedCredits] = useState(null);
 
   useEffect(() => {
     try {
@@ -222,27 +223,32 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
 
-                    {/* ✅ Floating Case ID Display */}
-<div className="flex items-center justify-between mb-4 gap-4">
-  {/* Right Side - Case ID + Candidate Button */}
-{caseId && (
-  <div className="top-4 right-2 bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
-    Case ID: {caseId}
-  </div>
-)}
-  </div>
-</div>
+            {/* ✅ Floating Case ID Display */}
+            <div className="flex items-center justify-between mb-4 gap-4">
+              {/* Right Side - Case ID + Candidate Button */}
+              {caseId && (
+                <div className="top-4 right-2 bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+                  Case ID: {caseId}
+                </div>
+              )}
+            </div>
+            {updatedCredits && (
+              <div className="top-4 right-2 bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+                Remaining Credits: {updatedCredits}
+              </div>
+            )}
+          </div>
 
-       {/* Back button */}
-      <div className="w-full max-w-6xl mb-4">
-        <button
-        type="button"
-          onClick={() => navigate(-1)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Home
-        </button>
-      </div>
+          {/* Back button */}
+          <div className="w-full max-w-6xl mb-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Home
+            </button>
+          </div>
 
           <div className="flex justify-between items-center mb-4">
             <p className="text-blue-800 font-medium mb-4">
@@ -288,9 +294,9 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
               ))
             )}
           </ul>
-          </motion.div>
+        </motion.div>
       </div>
-      </div>
+    </div>
   );
 };
 
