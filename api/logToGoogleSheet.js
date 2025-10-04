@@ -38,12 +38,13 @@ export default async function handler(req, res) {
     // 3️⃣ Append to Google Sheet
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "Sheet1!A:D",
+      range: "Credits!A:D",
       valueInputOption: "USER_ENTERED",
       requestBody: { values },
     });
 
     res.status(200).json({ message: "Logged to Google Sheet ✅" });
+    console.log("Logged to Google Sheet ✅");
   } catch (error) {
     console.error("Error logging to Google Sheets:", error);
     res.status(500).json({ error: "Failed to log data" });
