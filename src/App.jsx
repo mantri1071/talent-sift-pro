@@ -205,6 +205,20 @@ function App() {
 
       localStorage.setItem("resumeResults", JSON.stringify(result.data));
 
+      try {
+      await fetch("/api/logToGoogleSheet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          resumeCount: data.resumeFiles.length,
+          caseId: result.data?.id || "N/A",
+        }),
+      });
+    } catch (sheetError) {
+      console.warn("⚠️ Failed to log to Google Sheets:", sheetError);
+    }
+
       toast({
         title: "Success!",
         description: "✅ Resumes processed successfully. Remaining credits: ${updatedCredits}",
