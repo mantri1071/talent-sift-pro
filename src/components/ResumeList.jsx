@@ -233,7 +233,7 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
               )}
             </div>
             {updatedCredits && (
-              <div className="top-4 right-2 bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+              <div className="top-0 right-2 bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
                 Remaining Credits: {updatedCredits}
               </div>
             )}
