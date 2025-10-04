@@ -230,15 +230,6 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
     Case ID: {caseId}
   </div>
 )}
- <button
-      onClick={() =>
-        (window.location.href =
-          "https://core.qntrl.com/blueprint/startitnow/job/processtab/30725000001415521/30725000000000419")
-      }
-      className="bg-orange-400 hover:bg-orange-600 text-white font-bold px-6 py-2 rounded-lg shadow-md transition"
-    >
-      Candidate Management
-    </button>
   </div>
 </div>
 

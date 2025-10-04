@@ -21,63 +21,62 @@ function App() {
     resumeFiles: [],
   });
 
-  const [orgId, setOrgId] = useState(null); // ✅ Track case/org ID
+  const [orgId, setOrgId] = useState(null); 
   const [submittedExisting, setSubmittedExisting] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Auto-populate jobDescription and requiredSkills from URL params on mount
+  // Auto-populate jobDescription and requiredSkills from URL params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-  
+
     const decodeSafe = (str) => {
       try {
         return decodeURIComponent(str);
       } catch {
-        return '';
+        return "";
       }
     };
-  
-    const jobTypeLabel = decodeSafe(params.get('jobtype') || '').trim();
-  
-    // Map labels from URL param to select values exactly
+
+    const jobTypeLabel = decodeSafe(params.get("jobtype") || "").trim();
+
     const jobTypeMap = {
-      'Full time': 'fulltime',
-      'Part time': 'parttime',
-      'Contract': 'contract',
-      'Freelance': 'freelance',
-      'Internship': 'internship',
+      "Full time": "fulltime",
+      "Part time": "parttime",
+      Contract: "contract",
+      Freelance: "freelance",
+      Internship: "internship",
     };
-  
-    const mappedJobType = jobTypeMap[jobTypeLabel] || '';
-  
-    setFormData(prev => ({
+
+    const mappedJobType = jobTypeMap[jobTypeLabel] || "";
+
+    setFormData((prev) => ({
       ...prev,
-      requiredSkills: decodeSafe(params.get('skills') || ''),
-      jobDescription: decodeSafe(params.get('job') || ''),
-      yearsOfExperience: decodeSafe(params.get('yoe') || ''),
-      jobTitle: decodeSafe(params.get('title') || ''),
-      email: decodeSafe(params.get('mail') || ''),
-      industry: decodeSafe(params.get('industry') || ''),
-      jobType: mappedJobType,  // THIS MUST BE a valid option value or empty string
+      requiredSkills: decodeSafe(params.get("skills") || ""),
+      jobDescription: decodeSafe(params.get("job") || ""),
+      yearsOfExperience: decodeSafe(params.get("yoe") || ""),
+      jobTitle: decodeSafe(params.get("title") || ""),
+      email: decodeSafe(params.get("mail") || ""),
+      industry: decodeSafe(params.get("industry") || ""),
+      jobType: mappedJobType,
     }));
   }, []);
-  
-  // Helper to strip HTML tags from job description
+
+  // Helper to strip HTML tags
   const stripHtml = (html) => {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.innerHTML = html;
-    // Add space after block elements to keep words separate
-    const blockTags = ['p', 'div', 'br', 'li'];
-    blockTags.forEach(tag => {
+    const blockTags = ["p", "div", "br", "li"];
+    blockTags.forEach((tag) => {
       const elements = div.getElementsByTagName(tag);
       for (let el of elements) {
-        el.appendChild(document.createTextNode(' '));
+        el.appendChild(document.createTextNode(" "));
       }
     });
-    return div.textContent || div.innerText || '';
+    return div.textContent || div.innerText || "";
   };
-  // ✅ Restore orgId on load if available
+
+  // Restore orgId
   useEffect(() => {
     const storedId = localStorage.getItem("caseId");
     if (storedId) setOrgId(storedId);
@@ -90,7 +89,15 @@ function App() {
     }));
   };
 
-  // ✅ New Submission
+  // ✅ Credits Handling
+  const getDomainKey = (email) => {
+    const rawDomain = email.split("@")[1]?.toLowerCase().trim();
+    return {
+      rawDomain,
+      key: `${rawDomain.replace(/\./g, "_")}_credits`, // e.g. startitnow.com → startitnow_com_credits
+    };
+  };
+
   const handleNewSubmit = async (data) => {
     if (!data.jobTitle || !data.jobType || !data.jobDescription || !data.email) {
       toast({
@@ -111,35 +118,53 @@ function App() {
     }
 
     try {
-    // --- 1. Validate user email ---
-    const validateRes = await fetch("/api/validateuser", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: data.email }), // coming from input
-    });
-
-    const validateData = await validateRes.json();
-
-    if (validateRes.status !== 200 || validateData.status !== "success") {
-      toast({
-        title: "Unauthorized",
-        description: validateData.message || "Unauthorized company domain",
-        variant: "destructive",
+      // --- 1. Validate user email ---
+      const validateRes = await fetch("/api/validateuser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
       });
-      return;
-    }
 
+      const validateData = await validateRes.json();
+
+      if (validateRes.status !== 200 || validateData.status !== "success") {
+        toast({
+          title: "Unauthorized",
+          description: validateData.message || "Unauthorized company domain",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // --- 2. Handle credits per domain ---
+      const { rawDomain, key } = getDomainKey(data.email);
+
+      let credits = parseInt(localStorage.getItem(key), 10);
+
+      if (isNaN(credits)) {
+        credits = rawDomain === "startitnow.co.in" ? 500 : 100; // ✅ domain rule
+        localStorage.setItem(key, credits);
+      }
+
+      if (credits < data.resumeFiles.length) {
+        toast({
+          title: "Insufficient Credits",
+          description: "You only have ${credits} credits left.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Deduct credits
+      const updatedCredits = credits - data.resumeFiles.length;
+      localStorage.setItem(key, updatedCredits);
+
+      // --- 3. Submit job payload ---
       const form = new FormData();
 
-      const stripHtml = (html) => {
-        const div = document.createElement("div");
-        div.innerHTML = html;
-        return div.textContent || "";
-      };
-
       const jobPayload = {
-        org_id: 2, // ✅ Hardcoded for now
-        exe_name: data.requiredSkills || "run 1", // ✅ Job Title used as exe_name
+        org_id: rawDomain === "startitnow.co.in" ? 3 : 2,
+        exe_name: data.requiredSkills || "run 1",
         workflow_id: "resume_ranker",
         job_description: stripHtml(data.jobDescription),
       };
@@ -154,30 +179,34 @@ function App() {
         }
       });
 
-      const response = await fetch("https://agentic-ai.co.in/api/agentic-ai/workflow-exe", {
-        method: "POST",
-        body: form,
-      });
+      const response = await fetch(
+        "https://agentic-ai.co.in/api/agentic-ai/workflow-exe",
+        {
+          method: "POST",
+          body: form,
+        }
+      );
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || `Upload failed with status ${response.status}`);
+        throw new Error(
+          result.message || "Upload failed with status ${response.status}"
+        );
       }
 
       console.log("✅ Response data:", result.data);
 
       if (result.data?.id) {
-        setOrgId(result.data.id); // ✅ Store in state
-        localStorage.setItem("caseId", result.data.id); // ✅ Persist across sessions
+        setOrgId(result.data.id);
+        localStorage.setItem("caseId", result.data.id);
       }
 
       localStorage.setItem("resumeResults", JSON.stringify(result.data));
-    //  localStorage.setItem("resumeResults", JSON.stringify(result.data?.result || []));
 
       toast({
         title: "Success!",
-        description: "✅ Resumes processed successfully.",
+        description: "✅ Resumes processed successfully. Remaining credits: ${updatedCredits}",
       });
 
       navigate("/resumes");
@@ -191,12 +220,10 @@ function App() {
     }
   };
 
-  // ✅ Existing Flow
   const handleExistingSubmit = () => {
     setSubmittedExisting(true);
   };
 
-  
   return (
     <div className="min-h-screen bg-gray-100 relative overflow-hidden">
       <Helmet>
@@ -219,23 +246,22 @@ function App() {
         <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-white rounded-full blur-lg animate-pulse delay-1000"></div>
       </motion.div>
 
-      {/* App Content */}
       <div className="relative z-10 min-h-screen flex flex-col ">
-        {/* Logo/Header */}
         <div className="p-8 flex items-center justify-start space-x-4">
           <img src={logo} alt="Talent Sift Logo" className="h-10" />
           <div className="absolute top-0 right-0 p-4 flex items-center justify-end space-x-2">
             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
               <span className="text-blue font-bold">T</span>
             </div>
-            <span className="text-2xl font-serif font-bold text-gray-800">Talent Sift</span>
+            <span className="text-2xl font-serif font-bold text-gray-800">
+              Talent Sift
+            </span>
           </div>
           <div className="absolute top-6 right-0 p-4 flex items-center justify-end space-x-2">
             <span className="text-s font-serif text-gray-500">Pro Version</span>
           </div>
         </div>
 
-        {/* Main Section */}
         <div className="flex-1 flex items-center justify-center p-4">
           {!submittedExisting ? (
             <JobFormStep1
@@ -249,14 +275,12 @@ function App() {
           )}
         </div>
 
-        {/* Global Toaster */}
         <Toaster />
       </div>
 
-      {/* Footer */}
-          <div className="mt-8 ml-1 w-full">
-            <Footer />
-          </div>
+      <div className="mt-8 ml-1 w-full">
+        <Footer />
+      </div>
     </div>
   );
 }
