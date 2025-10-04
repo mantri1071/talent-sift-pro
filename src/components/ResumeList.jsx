@@ -62,31 +62,31 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
     }
   }, [resumes, orgId]);
 
-  useEffect(() => {
+ useEffect(() => {
   try {
-    const storedResumes = localStorage.getItem("resumeResults");
-    const parsedResumes = storedResumes ? JSON.parse(storedResumes) : null;
+    const storedResumes = JSON.parse(localStorage.getItem("resumeResults"));
 
-    if (parsedResumes?.email) {
-      const email = parsedResumes.email;
-      const domain = email.split("@")[1]?.toLowerCase();
+    let domain = null;
+
+    // Try to get domain from resumeResults.email
+    if (storedResumes?.email) {
+      domain = storedResumes.email.split("@")[1]?.toLowerCase();
+    }
+
+    // Or fallback to a manually hardcoded email
+    if (!domain) {
+      const fallbackEmail = localStorage.getItem("formEmail") || "user@startitnow.co.in";
+      domain = fallbackEmail.split("@")[1]?.toLowerCase();
+    }
+
+    if (domain) {
       const key = `${domain.replace(/\./g, "_")}_credits`;
-
       const credits = parseInt(localStorage.getItem(key), 10);
+
+      console.log("🟠 Looking for credits using key:", key, "→", credits);
+
       if (!isNaN(credits)) {
         setUpdatedCredits(credits);
-      }
-    } else {
-      // Fallback: try getting email from somewhere else (e.g. job form state)
-      const fallbackEmail = localStorage.getItem("formEmail");
-      if (fallbackEmail) {
-        const domain = fallbackEmail.split("@")[1]?.toLowerCase();
-        const key = `${domain.replace(/\./g, "_")}_credits`;
-
-        const credits = parseInt(localStorage.getItem(key), 10);
-        if (!isNaN(credits)) {
-          setUpdatedCredits(credits);
-        }
       }
     }
   } catch (err) {
