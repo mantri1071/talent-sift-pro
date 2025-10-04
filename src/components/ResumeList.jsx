@@ -223,20 +223,20 @@ if (parsedResumes && Array.isArray(parsedResumes.result)) {
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-3xl font-semibold text-blue-900">📄 Talent Sift</h2>
 
-            {/* ✅ Floating Case ID Display */}
-            <div className="flex items-center justify-between mb-4 gap-4">
-              {/* Right Side - Case ID + Candidate Button */}
-              {caseId && (
-                <div className="top-4 right-2 bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
-                  Case ID: {caseId}
-                </div>
-              )}
-            </div>
-            {updatedCredits && (
-              <div className="top-0 right-2 bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
-                Remaining Credits: {updatedCredits}
-              </div>
-            )}
+   {/* ✅ Floating Case ID + Remaining Credits */}
+<div className="flex items-center justify-between mb-4 gap-4">
+  {caseId && (
+    <div className="bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+      Case ID: {caseId}
+    </div>
+  )}
+
+  {updatedCredits !== null && (
+    <div className="bg-orange-400 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
+      Remaining Credits: {updatedCredits}
+    </div>
+  )}
+</div>
           </div>
 
           {/* Back button */}
