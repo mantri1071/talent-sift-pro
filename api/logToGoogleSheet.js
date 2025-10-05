@@ -67,10 +67,15 @@ export default async function handler(req, res) {
 
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "Credits",
+      range: "Sheet1",
       valueInputOption: "USER_ENTERED",
       requestBody: { values },
     });
+
+const metadata = await sheets.spreadsheets.get({ spreadsheetId });
+const sheetNames = metadata.data.sheets.map(s => s.properties.title);
+console.log("✅ Available sheets:", sheetNames);
+
 
     console.log("✅ Google Sheets API response:", response.status, response.statusText);
 
